@@ -8,7 +8,7 @@ There is no progress yet.
 = Details =
 
 As specified in the introduction, there has been no progress.
-**bold*This
+*bold*This
 *_italic_is
 *a
 *list.
