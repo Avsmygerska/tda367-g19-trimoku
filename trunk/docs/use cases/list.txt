@@ -1,0 +1,53 @@
+Start game.
+Exit game.
+Place piece.
+Finish game.
+View the board.
+
+Select a pin.
+Switch player.
+
+View only selected pins.
+
+Nouns:
+Game
+Board
+Piece
+Menu
+Move
+Pin
+Pop-up
+Player
+Draw
+Turn
+Resources
+State
+Dot
+Graphical representation
+Game logic
+Button
+View
+Amount
+Direction
+
+Verbs:
+interact
+display
+mark
+reflect
+prevent
+start
+set
+select
+click/press
+play
+abort
+move
+highlight
+win
+lose
+update
+inform
+continue
+place
+exit
