@@ -22,8 +22,7 @@ public class Board {
 				tmp.add(new ArrayList<Player>());
 			}
 			brd.add(tmp);
-		}
-				
+		}				
 	}
 	
 	public Player peek(int x, int y, int z) {

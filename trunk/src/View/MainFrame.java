@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class MainFrame extends javax.swing.JFrame {
-	private JPanel DDD;
+	private RenderPanel DDD;
 	private JPanel Controls;
 	private PinArea PinArea;
 	
@@ -89,9 +89,9 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 			{
-				DDD = new JPanel();
-				DDD.setPreferredSize(new java.awt.Dimension(600, 600));
-				getContentPane().add(DDD, BorderLayout.CENTER);
+				DDD = new RenderPanel(600,600);
+				//DDD.setPreferredSize(new java.awt.Dimension(600, 600));
+				getContentPane().add(DDD.getPanel(), BorderLayout.CENTER);
 				Controls = new JPanel();
 				BoxLayout ControlsLayout = new BoxLayout(Controls, javax.swing.BoxLayout.Y_AXIS);
 				Controls.setLayout(ControlsLayout);
@@ -113,6 +113,7 @@ public class MainFrame extends javax.swing.JFrame {
 				}
 			}
 			pack();
+			DDD.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -152,6 +153,7 @@ public class MainFrame extends javax.swing.JFrame {
 		if(ExitGameAction == null) {
 			ExitGameAction = new AbstractAction("Exit Game", null) {
 				public void actionPerformed(ActionEvent evt) {
+					DDD.stop();
 					System.exit(0);
 				}
 			};
