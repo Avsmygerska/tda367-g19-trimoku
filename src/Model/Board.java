@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Board {
 	
 	ArrayList<ArrayList<ArrayList<Player>>> brd;
+	Player[][][] brd2;
 	
 	int maxX;
 	int maxY;
@@ -22,24 +23,62 @@ public class Board {
 				tmp.add(new ArrayList<Player>());
 			}
 			brd.add(tmp);
-		}				
+		}
+		brd2 = new Player[maxX][maxY][maxZ];
 	}
 	
 	public Player peek(int x, int y, int z) {
 		return brd.get(x).get(y).get(z);		
 	}
 	
+	// Returns a null if the given position was empty.
+	public Player peek2(int x, int y, int z) {
+		return brd2[x][y][z];		
+	}
+	
 	public boolean tryPlace(int x, int y) {
 		return (brd.get(x).get(y).size() <= maxZ);
 	}
-	public boolean place(int x, int y, Player p) {		
+	
+	public boolean tryPlace2(int x, int y) {
+		if (x > maxX || y > maxY)
+			return false;
+		
+		for(int i = 0; i <= maxZ;i++){
+			if(brd2[x][y][i] == null){				
+				return true;
+			}		
+		}
+		return false;
+	}
+	
+	public boolean place(int x, int y, Player p) {
+		
+		if (x > maxX || y > maxY)
+			return false;
+		
 		if (brd.get(x).get(y).size() <= maxZ) {
 			brd.get(x).get(y).add(p);
 			return true;			
-		}		
+		}
 		
 		return false;		
 	}
+	
+	public boolean place2(int x, int y, Player p) {
+		
+		if (x > maxX || y > maxY)
+			return false;
+		
+		for(int i = 0; i <= maxZ;i++){
+			if(brd2[x][y][i] == null){
+				brd2[x][y][i] = p;
+				return true;
+			}		
+		}
+		return false;
+	}
+	
 	
 	public boolean win(Player p) {
 		
@@ -91,4 +130,22 @@ public class Board {
 		return false;
 	}
 	
+	public boolean win2(Player p) {
+		
+		for(int x = 0; x <= maxX; x++){			
+			for(int y = 0; y <= maxY; y++) {
+				int cal = 0;
+				for(int z = 0; z < brd.get(x).get(y).size(); z++) {
+					if (!brd.get(x).get(y).get(z).equals(p))
+						break;
+					cal++;
+				}
+				if (cal == maxZ+1){
+					return true;
+				}
+			}			
+		}
+		
+		return false;
+	}
 }
