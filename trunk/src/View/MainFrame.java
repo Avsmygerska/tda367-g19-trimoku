@@ -1,5 +1,6 @@
 package View;
 import java.awt.BorderLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -28,6 +29,9 @@ import javax.swing.SwingUtilities;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class MainFrame extends javax.swing.JFrame {
+	
+	private boolean show = true;
+	
 	private RenderPanel DDD;
 	private JPanel Controls;
 	private PinArea PinArea;
@@ -66,7 +70,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private void initGUI() {
 		try {
 			BorderLayout thisLayout = new BorderLayout();
-			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			getContentPane().setLayout(thisLayout);
 			this.setResizable(false);
 			{
@@ -138,11 +142,20 @@ public class MainFrame extends javax.swing.JFrame {
 		return PlaceAction;
 	}
 	
-	private AbstractAction getHidePinAction() {
+	private AbstractAction getHidePinAction() {		
 		if(HidePinAction == null) {
 			HidePinAction = new AbstractAction("Hide Pin", null) {
 				public void actionPerformed(ActionEvent evt) {
+					for(Point p : PinArea.getSelectedPins()){
+						System.out.println(p.x + " " + p.y);
+						DDD.getRender().switchPin(p.x, p.y);
+					}
 					
+					/*
+					DDD.getRender().showPins(show);
+					show = !show;
+					*/
+				
 				}
 			};
 		}
@@ -165,6 +178,7 @@ public class MainFrame extends javax.swing.JFrame {
 		if(HideButton == null) {
 			HideButton = new JButton();
 			HideButton.setText("Hide");
+			HideButton.setAction(getHidePinAction());
 		}
 		return HideButton;
 	}
