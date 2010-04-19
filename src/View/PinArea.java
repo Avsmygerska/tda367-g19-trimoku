@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.util.ArrayList;
 
 public class PinArea extends JPanel{
@@ -37,5 +38,16 @@ public class PinArea extends JPanel{
 	
 	public JCheckBox getPin(int i, int j){
 		return Boxes.get(i).get(j);
+	}
+	
+	public ArrayList<Point> getSelectedPins () {
+		ArrayList<Point> pts = new ArrayList<Point>();
+		
+		for(int i = 0; i < 5; i++)		 
+			for(int j = 0; j < 5; j++)
+				if(getPin(i,j).isSelected())
+					pts.add(new Point(i,j));
+		
+		return pts;
 	}
 }
