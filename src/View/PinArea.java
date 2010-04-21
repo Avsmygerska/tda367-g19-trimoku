@@ -45,8 +45,10 @@ public class PinArea extends JPanel{
 		
 		for(int i = 0; i < 5; i++)		 
 			for(int j = 0; j < 5; j++)
-				if(getPin(i,j).isSelected())
+				if(getPin(i,j).isSelected()) {
 					pts.add(new Point(i,j));
+					getPin(i,j).setSelected(false);
+				}
 		
 		return pts;
 	}
