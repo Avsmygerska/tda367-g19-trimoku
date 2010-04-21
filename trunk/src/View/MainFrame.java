@@ -1,7 +1,9 @@
 package View;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
@@ -14,6 +16,9 @@ import javax.swing.JPanel;
 
 import javax.swing.WindowConstants;
 import javax.swing.SwingUtilities;
+
+import Model.Board;
+import Model.Player;
 
 
 /**
@@ -49,6 +54,14 @@ public class MainFrame extends javax.swing.JFrame {
 	private JMenuBar MenuBar;
 	private JMenu jMenu1;
 	
+	// Testing stuff
+	
+	Board b;
+	Player active;
+	Player p1 = new Player("p1",Color.RED);
+	Player p2 = new Player("p2",Color.GREEN);	
+	//
+	
 	/**
 	* Auto-generated main method to display this JFrame
 	*/
@@ -71,7 +84,11 @@ public class MainFrame extends javax.swing.JFrame {
 		try {
 			BorderLayout thisLayout = new BorderLayout();
 			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			getContentPane().setLayout(thisLayout);
+			getContentPane().setLayout(thisLayout);			
+			
+			b = new Board(5,5,5);
+			active = p1;
+			
 			this.setResizable(false);
 			{
 				MenuBar = new JMenuBar();
@@ -94,6 +111,7 @@ public class MainFrame extends javax.swing.JFrame {
 			}
 			{
 				DDD = new RenderPanel(600,600);
+				DDD.getRender().setBoard(b);
 				//DDD.setPreferredSize(new java.awt.Dimension(600, 600));
 				getContentPane().add(DDD.getPanel(), BorderLayout.CENTER);
 				Controls = new JPanel();
@@ -136,6 +154,16 @@ public class MainFrame extends javax.swing.JFrame {
 							}							
 						}					
 					}
+					ArrayList<Point> pt = PinArea.getSelectedPins();
+					if(pt.size() == 1) {
+						b.place(pt.get(0).x, pt.get(0).y, active);
+						if(b.win(active))
+							System.out.println(active.getName() + " vann!");
+						if(active.equals(p1))
+							active = p2;
+						else
+							active = p1;
+					}					
 				}
 			};
 		}
@@ -147,15 +175,8 @@ public class MainFrame extends javax.swing.JFrame {
 			HidePinAction = new AbstractAction("Hide Pin", null) {
 				public void actionPerformed(ActionEvent evt) {
 					for(Point p : PinArea.getSelectedPins()){
-						System.out.println(p.x + " " + p.y);
 						DDD.getRender().switchPin(p.x, p.y);
-					}
-					
-					/*
-					DDD.getRender().showPins(show);
-					show = !show;
-					*/
-				
+					}				
 				}
 			};
 		}
