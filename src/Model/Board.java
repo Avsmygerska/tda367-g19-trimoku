@@ -135,38 +135,24 @@ public class Board {
 	}*/
 	
 	public boolean win2(Player p) {
-
-		// Check if a player have 5 in a row in the Z-dimension
-		for(int x = 0; x < maxX; x++){			
-			for(int y = 0; y < maxY; y++) {
-				int cal = 0;
-				for(int z = 0; z < maxZ; z++) {
-					if (brd2[x][y][z] == null || !brd2[x][y][z].equals(p)){
-						break;
-					}
-					cal++;
-				}
-				if (cal == maxZ){
-					return true;
-				}
-			}			
+		
+		if(checkX(p)){
+			return true;
+		}
+		if(checkY(p)){
+			return true;
+		}
+		if(checkZ(p)){
+			return true;
+		}
+		if(checkInnerDiagonals(p)){
+			return true;
 		}
 		
-		// Check if a player have 5 in a row in the Y-dimension
-		for(int x = 0; x < maxX; x++){			
-			for(int z = 0; z < maxZ; z++) {
-				int cal = 0;
-				for(int y = 0; y < maxY; y++) {
-					if (brd2[x][y][z] == null || !brd2[x][y][z].equals(p)){
-						break;
-					}
-					cal++;
-				}
-				if (cal == maxZ){
-					return true;
-				}
-			}			
-		}
+		return false;
+	}
+	
+	public boolean checkX(Player p){
 		// Check if a player have 5 in a row in the X-dimension
 		for(int y = 0; y < maxY; y++){			
 			for(int z = 0; z < maxZ; z++) {
@@ -183,6 +169,149 @@ public class Board {
 				}
 			}			
 		}
+		// Check if a player have won on a diagonal in the X-dimension
+		for(int x = 0; x < maxX; x++){
+			boolean winDiagonalDown = true;
+			boolean winDiagonalUp   = true;
+			int i = 0;
+			while((winDiagonalDown || winDiagonalUp) && i < maxX){
+				if( brd2[x][i][i] == null || !brd2[x][i][i].equals(p)){
+					winDiagonalUp = false;
+				}
+				if( brd2[x][i][maxX-1-i] == null || !brd2[x][i][maxX-1-i].equals(p)){
+					winDiagonalDown = false;
+				}
+				i++;
+			}
+			if(winDiagonalDown || winDiagonalUp){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkY(Player p){
+		
+		// Check if a player have 5 in a row in the Y-dimension
+		for(int x = 0; x < maxX; x++){			
+			for(int z = 0; z < maxZ; z++) {
+				int cal = 0;
+				for(int y = 0; y < maxY; y++) {
+					if (brd2[x][y][z] == null || !brd2[x][y][z].equals(p)){
+						break;
+					}
+					cal++;
+				}
+				if (cal == maxZ){
+					return true;
+				}
+			}			
+		}
+		
+		// Check if a player have won on a diagonal in the y-dimension
+		for(int y = 0; y < maxY; y++){
+			boolean winDiagonalDown = true;
+			boolean winDiagonalUp   = true;
+			int i = 0;
+			while((winDiagonalDown || winDiagonalUp) && i < maxY){
+				if( brd2[i][y][i] == null || !brd2[i][y][i].equals(p)){
+					winDiagonalUp = false;
+				}
+				if( brd2[i][y][maxY-1-i] == null || !brd2[i][y][maxY-1-i].equals(p)){
+					winDiagonalDown = false;
+				}
+				i++;
+			}
+			if(winDiagonalDown || winDiagonalUp){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean checkZ(Player p){
+		
+		// Check if a player have 5 in a row in the Z-dimension
+		for(int x = 0; x < maxX; x++){
+			for(int y = 0; y < maxY; y++) {
+				int cal = 0;
+				for(int z = 0; z < maxZ; z++) {
+					if (brd2[x][y][z] == null || !brd2[x][y][z].equals(p)){
+						break;
+					}
+					cal++;
+				}
+				if (cal == maxZ){
+					return true;
+				}
+			}			
+		}
+		// Check if a player have won on a diagonal in the z-dimension
+		for(int z = 0; z < maxZ; z++){
+			boolean winDiagonalDown = true;
+			boolean winDiagonalUp   = true;
+			int i = 0;
+			while((winDiagonalDown || winDiagonalUp) && i < maxZ){
+				if( brd2[i][i][z] == null || !brd2[i][i][z].equals(p)){
+					winDiagonalUp = false;
+				}
+				if( brd2[maxZ-1-i][i][z] == null || !brd2[maxZ-1-i][i][z].equals(p)){
+					winDiagonalDown = false;
+				}
+				i++;
+			}
+			if(winDiagonalDown || winDiagonalUp){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean checkInnerDiagonals(Player p){
+		
+		/* 
+	 		Here we want to check if a player have won in two of the inner diagonals.
+	 		Example: From (0,0,0) - (4,4,4) and (0,0,4) - (4,4,0)
+		*/
+		
+		boolean winDiagonalDown = true;
+		boolean winDiagonalUp   = true;
+		int i = 0;
+		while((winDiagonalDown || winDiagonalUp) && i < maxX){
+			if( brd2[i][i][i] == null || !brd2[i][i][i].equals(p)){
+				winDiagonalUp = false;
+			}
+			if( brd2[i][i][maxX-1-i] == null || !brd2[i][i][maxX-1-i].equals(p)){
+				winDiagonalDown = false;
+			}
+			i++;
+		}
+		if(winDiagonalDown || winDiagonalUp){
+			return true;
+		}
+		
+		/* 
+		 	Here we want to check if a player have won in two of the inner diagonals.
+		 	Example: From (4,0,0) - (0,4,4) and (4,0,4) - (0,4,0)
+		*/ 
+		winDiagonalDown = true;
+		winDiagonalUp   = true;
+		i = 0;
+		while((winDiagonalDown || winDiagonalUp) && i < maxX){
+			if( brd2[maxX-1-i][i][i] == null || !brd2[maxX-1-i][i][i].equals(p)){
+				winDiagonalUp = false;
+			}
+			if( brd2[maxX-1-i][i][maxX-1-i] == null || !brd2[maxX-1-i][i][maxX-1-i].equals(p)){
+				winDiagonalDown = false;
+			}
+			i++;
+		}
+		if(winDiagonalDown || winDiagonalUp){
+			return true;
+		}
+						
 		return false;
 	}
 }
