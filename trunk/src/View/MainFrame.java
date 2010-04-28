@@ -35,8 +35,7 @@ import Model.Player;
 */
 public class MainFrame extends javax.swing.JFrame {
 	
-	private boolean show = true;
-	
+	private static final long serialVersionUID = 8261482053967412810L;
 	private RenderPanel DDD;
 	private JPanel Controls;
 	private PinArea PinArea;
@@ -112,8 +111,7 @@ public class MainFrame extends javax.swing.JFrame {
 			{
 				DDD = new RenderPanel(600,600);
 				DDD.getRender().setBoard(b);
-				//DDD.setPreferredSize(new java.awt.Dimension(600, 600));
-				getContentPane().add(DDD.getPanel(), BorderLayout.CENTER);
+				getContentPane().add(DDD, BorderLayout.CENTER);
 				Controls = new JPanel();
 				BoxLayout ControlsLayout = new BoxLayout(Controls, javax.swing.BoxLayout.Y_AXIS);
 				Controls.setLayout(ControlsLayout);

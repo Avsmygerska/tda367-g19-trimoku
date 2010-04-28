@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class PinArea extends JPanel{
 	
+	private static final long serialVersionUID = 9109603426210093692L;
 	private ArrayList<ArrayList<JCheckBox>> Boxes;
 	
 	public PinArea() {

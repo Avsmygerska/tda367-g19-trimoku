@@ -1,16 +1,11 @@
 package View;
 
-import java.awt.Color;
-import java.util.Arrays;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
-
 import Model.*;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class Render implements GLEventListener {
 	private float rquad = 0.0f;
@@ -90,7 +85,10 @@ public class Render implements GLEventListener {
 		}
 
 		gl.glFlush();
-		//rquad += 0.3f;
+	}
+	
+	public void turn(float deg) {
+		rquad += deg;
 	}
 
 	// Draws the bottom plate.
@@ -165,7 +163,6 @@ public class Render implements GLEventListener {
 	public void setBoard(Board b) {
 		brd = b;
 	}
-
 	
 	public void init(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
