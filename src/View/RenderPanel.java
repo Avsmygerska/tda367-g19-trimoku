@@ -1,14 +1,12 @@
 package View;
 
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import javax.media.opengl.*;
 import javax.swing.JPanel;
-import javax.swing.event.MouseInputAdapter;
 
 import com.sun.opengl.util.FPSAnimator;
 
@@ -54,7 +52,7 @@ class CMA implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseClicked(MouseEvent m) {
-		// Pin selection?
+		// Ray cast pin selection? Do nothing for now.
 	}
 
 	@Override
@@ -64,7 +62,7 @@ class CMA implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseExited(MouseEvent m) {
-		// Reset recording?		
+		// Do nothing
 	}
 
 	@Override
@@ -73,11 +71,12 @@ class CMA implements MouseListener, MouseMotionListener {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent m) {}
+	public void mouseReleased(MouseEvent m) {
+		// Do nothing
+	}
 
 	@Override
 	public void mouseDragged(MouseEvent m) {
-		// TODO Auto-generated method stub
 		r.turn(360*((m.getXOnScreen()-x)/(1f*m.getComponent().getWidth())));
 		x = m.getXOnScreen();
 	}

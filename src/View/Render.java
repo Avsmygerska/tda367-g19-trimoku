@@ -93,7 +93,7 @@ public class Render implements GLEventListener {
 
 	// Draws the bottom plate.
 	public void drawPlate(GL gl) {
-		gl.glBegin(gl.GL_QUADS);
+		gl.glBegin(GL.GL_QUADS);
 
 		gl.glColor3f(0.5f, 0.5f, 0.5f);
 		gl.glVertex3f( w, t, -d);	// Top Right Of The Quad (Top)
@@ -134,7 +134,7 @@ public class Render implements GLEventListener {
 		gl.glTranslatef(0f, +pSize, 0f);
 	}
 
-	// Draws a peice for the selected player.
+	// Draws a piece for the selected player.
 	public void drawPiece(GL gl, Player p) {
 		
 		gl.glColor3f(p.getRed(), p.getGreen(), p.getBlue());		
@@ -146,9 +146,25 @@ public class Render implements GLEventListener {
 	
 	// Switches the visibility state for the selected pin.
 	public void switchPin(int x, int y) {
-		if( x < pX && y < pY) {
+		if( x < pX && y < pY)
 			pinVisible[x][y] = !pinVisible[x][y];			
-		}		
+	}
+	
+	public void setRow(int no, boolean val) {
+		if(no < pX)
+			for(int y = 0; y < pY; y++)
+				pinVisible[no][y] = val;
+	}
+	
+	public void setCol(int no, boolean val) {		
+		if(no < pY)
+			for(int x = 0; x < pX; x++)
+				pinVisible[x][no] = val;
+	}
+	
+	public void setPin(int x, int y, boolean val) {
+		if( x < pX && y < pY)
+			pinVisible[x][y] = val;
 	}
 
 	// Shows or hides all pins.
@@ -166,10 +182,10 @@ public class Render implements GLEventListener {
 	
 	public void init(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
-		gl.glShadeModel(GL.GL_SMOOTH);              // Enable Smooth Shading
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);    // Black Background
-		gl.glClearDepth(1.0f);                      // Depth Buffer Setup
-		gl.glEnable(GL.GL_DEPTH_TEST);							// Enables Depth Testing
+		gl.glShadeModel(GL.GL_SMOOTH);                              // Enable Smooth Shading
+		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);                    // Black Background
+		gl.glClearDepth(1.0f);                                      // Depth Buffer Setup
+		gl.glEnable(GL.GL_DEPTH_TEST);							    // Enables Depth Testing
 		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
 		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
 

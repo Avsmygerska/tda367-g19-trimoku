@@ -115,12 +115,12 @@ public class MainFrame extends javax.swing.JFrame {
 				Controls = new JPanel();
 				BoxLayout ControlsLayout = new BoxLayout(Controls, javax.swing.BoxLayout.Y_AXIS);
 				Controls.setLayout(ControlsLayout);
-				Controls.setPreferredSize(new java.awt.Dimension(110, 70));
+				//Controls.setPreferredSize(new java.awt.Dimension(110, 70));
 				getContentPane().add(Controls, BorderLayout.EAST);				
 				{
 					PlaceButton = new JButton();
 					{
-						PinArea = new PinArea();
+						PinArea = new PinArea(5,5,DDD.getRender());
 						Controls.add(PinArea);
 						Controls.add(PlaceButton);						
 						Controls.add(getHideButton());
