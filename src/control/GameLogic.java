@@ -2,8 +2,8 @@ package control;
 
 import java.util.ArrayList;
 
-import Model.*;
-import View.*;
+import model.*;
+import view.*;
 
 
 public class GameLogic {

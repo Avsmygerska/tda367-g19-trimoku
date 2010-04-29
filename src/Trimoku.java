@@ -1,6 +1,6 @@
 import javax.swing.SwingUtilities;
-import View.*;
-import Model.*;
+import view.*;
+import model.*;
 import control.*;
 
 
