@@ -1,8 +1,6 @@
-import java.util.PriorityQueue;
 import java.util.ArrayList;
 
-import Model.Board;
-import Model.Player;
+import model.*;
 
 public class Main {
 

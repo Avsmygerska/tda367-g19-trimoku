@@ -1,6 +1,6 @@
 package control;
 
-import Model.*;
+import model.*;
 
 public class User {
 	private Player player;
