@@ -15,14 +15,14 @@ public class Render implements GLEventListener {
 	// Board       Width     Depth    Thickness 
 	private float w = 3.0f, d = 3.0f, t = 0.2f;
 
-	private float edge = 0.5f;
-	private float pSize = 0.4f;
+	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
+	private float pSize = 0.4f; // Radius of a piece.
 
 	private int pX = 5, pY = 5, pZ = 5;
 
 	private boolean[][] pinVisible = new boolean[pX][pY];  
 
-	private float modX, modY;
+	private float spacingX, spacingY;
 
 	private GLU glu = new GLU();
 
@@ -59,10 +59,7 @@ public class Render implements GLEventListener {
 		gl.glTranslatef(w,t,d);
 		gl.glColor3f(0f, 1f, 0f);
 		glu.gluSphere(glu.gluNewQuadric(), 0.1, 10, 10);
-		gl.glTranslatef(-2*w,0f,-2*d);
-		gl.glColor3f(0f, 0f, 1f);
-		glu.gluSphere(glu.gluNewQuadric(), 0.1, 10, 10);
-		gl.glTranslatef(w,-t,d);    	
+		gl.glTranslatef(-w,-t,-d);
 
 		// Draw Pieces and Pins        
 		gl.glTranslatef(w-edge, t+pSize, d-edge);
@@ -79,9 +76,9 @@ public class Render implements GLEventListener {
 					}
 					gl.glTranslatef(0f, -2*pSize*z, 0f);
 				}
-				gl.glTranslatef(0f, 0f, -modY);
+				gl.glTranslatef(0f, 0f, -spacingY);
 			}        	
-			gl.glTranslatef(-modX, 0f, modY*pY);
+			gl.glTranslatef(-spacingX, 0f, spacingY*pY);
 		}
 
 		gl.glFlush();
@@ -161,11 +158,6 @@ public class Render implements GLEventListener {
 			for(int x = 0; x < pX; x++)
 				pinVisible[x][no] = val;
 	}
-	
-	public void setPin(int x, int y, boolean val) {
-		if( x < pX && y < pY)
-			pinVisible[x][y] = val;
-	}
 
 	// Shows or hides all pins.
 	public void showPins(boolean val) {
@@ -189,8 +181,8 @@ public class Render implements GLEventListener {
 		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
 		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
 
-		modX = (2*w - 2*edge)/(pX-1);
-		modY = (2*d - 2*edge)/(pY-1);
+		spacingX = (2*w - 2*edge)/(pX-1);
+		spacingY = (2*d - 2*edge)/(pY-1);
 
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, this.lightAmbient, 0);
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, this.lightDiffuse, 0);

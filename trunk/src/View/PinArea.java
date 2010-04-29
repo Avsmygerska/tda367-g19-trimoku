@@ -9,9 +9,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,13 +32,14 @@ public class PinArea extends JPanel{
 	private JPanel xButtons;
 	private JPanel yButtons;
 	private JPanel marker;
-	private Render r;
+	private Render render;
 
-	public PinArea(int x, int y, Render r) {
-		this.r = r;
+	public PinArea(int x, int y, Render render) {
+		this.render = render;
 		bxs = new JPanel();
 		xButtons = new JPanel();
 		yButtons = new JPanel();
+		marker = new MarkerPanel();
 
 		// Layout stuff
 		GridBagLayout thisLayout = new GridBagLayout();
@@ -47,24 +48,21 @@ public class PinArea extends JPanel{
 		thisLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
 		thisLayout.columnWidths = new int[] {7, 7, 7, 7};
 		this.setLayout(thisLayout);
+		
+		this.add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		yButtons = new JPanel();
 		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
 		this.add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		yButtons.setLayout(yButtonsLayout);
 
-		xButtons = new JPanel();
 		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
 		this.add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		xButtons.setLayout(xPanelLayout);
+		xButtons.setLayout(xPanelLayout);	
 
-		marker = new JPanel();
-		this.add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
-				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-
-		GridLayout bxsLayout = new GridLayout(x, y, 1, 1);		
+		GridLayout bxsLayout = new GridLayout(x, y);		
 		bxsLayout.setColumns(1);		
 		bxs.setLayout(bxsLayout);
 		this.add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
@@ -84,6 +82,8 @@ public class PinArea extends JPanel{
 			}
 			Boxes.add(tmp);
 		}
+		
+		// Add hider buttons for each row and column.
 
 		JButton raj;
 		for(int i = 0; i < x; i++) {
@@ -118,6 +118,17 @@ public class PinArea extends JPanel{
 
 		return pts;
 	}
+	
+	class MarkerPanel extends JPanel {
+		private static final long serialVersionUID = -467353064175378414L;
+
+		@Override
+		public void paintComponent(Graphics g){
+			super.paintComponent(g);
+			g.setColor(Color.GREEN);
+			g.fillOval(5, 5, 10, 10);
+		}
+	}
 
 	class Hider extends AbstractAction{
 
@@ -144,9 +155,9 @@ public class PinArea extends JPanel{
 				setText("Show");			
 
 			if(vertical)
-				r.setRow(number, val);
+				render.setRow(number, val);
 			else
-				r.setCol(number, val);		
+				render.setCol(number, val);		
 		}
 
 		private void setText(String t) {
