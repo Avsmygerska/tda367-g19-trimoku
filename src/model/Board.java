@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.util.ArrayList;
 
@@ -247,7 +247,6 @@ public class Board {
 						
 		return false;
 	}
-	
 		
 	public void clear(){
 		brd = new Player[maxX][maxY][maxZ];

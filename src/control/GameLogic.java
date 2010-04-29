@@ -12,7 +12,7 @@ public class GameLogic {
 	Board b;
 	
 	public GameLogic () {
-	
+		
 	}
 	
 	public GameLogic (int x, int y, int z) {
@@ -29,11 +29,10 @@ public class GameLogic {
 	}	
 	
 	public void place(int x, int y) {
-		if(!players.isEmpty()){
+		if(!players.isEmpty())
 			if(b.place(x, y, players.get(active).getPlayer())){
 				active = (active+1)%players.size();
 			}				
-		}
 	}
 	
 
