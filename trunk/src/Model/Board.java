@@ -5,19 +5,22 @@ import java.util.ArrayList;
 public class Board {
 	
 	//ArrayList<ArrayList<ArrayList<Player>>> brd;
+	public AI ai;
 	Player[][][] brd;
 	Player NO_PLAYER = new Player("NO_PLAYER",0,0,0);
 	
 	int maxX;
 	int maxY;
 	int maxZ;
-
+	
+	
 	public Board(int x, int y, int z) {
 		maxX = x;
 		maxY = y;
 		maxZ = z;
 		
 		brd = new Player[maxX][maxY][maxZ];
+		ai = new AI(this);
 	}
 	
 	public Player peek(int x, int y, int z) {
@@ -243,5 +246,9 @@ public class Board {
 		}
 						
 		return false;
+	}
+		
+	public void clear(){
+		brd = new Player[maxX][maxY][maxZ];
 	}
 }
