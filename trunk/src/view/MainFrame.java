@@ -1,4 +1,4 @@
-package View;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,9 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-
-import Model.*;
-import control.*;
+import model.*;
 
 
 
@@ -111,7 +109,9 @@ public class MainFrame extends javax.swing.JFrame {
 					frame.setTitle("New Game");
 					frame.add(panel);
 					frame.pack();
-					frame.setVisible(true);			
+					frame.setVisible(true);
+				    
+					
 				}
 			};
 		}
