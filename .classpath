@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/chalmers/users/bechri/IT project/tda367-g19-trimoku/joGL/jogl-1.1.1-linux-i586/lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/chalmers/users/bechri/IT project/tda367-g19-trimoku/joGL/jogl-1.1.1-linux-i586/lib/jogl.jar"/>
+	<classpathentry kind="lib" path="joGL/jogl-1.1.1-linux-i586/lib/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="joGL/jogl-1.1.1-linux-i586/lib/jogl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
