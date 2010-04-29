@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -10,6 +9,8 @@ import javax.swing.JPanel;
 
 import com.sun.opengl.util.FPSAnimator;
 
+import model.*;
+
 public class RenderPanel extends JPanel{
 
 	private static final long serialVersionUID = 27030460017242914L;
@@ -18,9 +19,8 @@ public class RenderPanel extends JPanel{
 	private FPSAnimator animator;
 	private CMA cma;
 	
-	RenderPanel(int dimX, int dimY) {
-		setPreferredSize(new Dimension(dimX,dimY));		
-		render = new Render();
+	RenderPanel(int dimX, int dimY, Board b) {
+		render = new Render(b);
 		cma = new CMA(render);
 		
 		glCanvas = new GLCanvas(new GLCapabilities());
@@ -46,44 +46,21 @@ class CMA implements MouseListener, MouseMotionListener {
 	private Render r;
 	private int x;
 	
-	public CMA(Render r) {
-		this.r = r;
-	}
-
+	public CMA(Render r) { this.r = r; }
+	
 	@Override
-	public void mouseClicked(MouseEvent m) {
-		// Ray cast pin selection? Do nothing for now.
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent m) {
-		// Do nothing		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent m) {
-		// Do nothing
-	}
-
-	@Override
-	public void mousePressed(MouseEvent m) {
-		x = m.getXOnScreen();
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent m) {
-		// Do nothing
-	}
-
+	public void mousePressed(MouseEvent m) { x = m.getXOnScreen(); }
+	
 	@Override
 	public void mouseDragged(MouseEvent m) {
 		r.turn(360*((m.getXOnScreen()-x)/(1f*m.getComponent().getWidth())));
 		x = m.getXOnScreen();
 	}
 
-	@Override
-	public void mouseMoved(MouseEvent m) {
-		// Do nothing		
-	}
-	
+	// None of these are used.
+	@Override public void mouseClicked(MouseEvent m)  {}
+	@Override public void mouseReleased(MouseEvent m) {}
+	@Override public void mouseEntered(MouseEvent m)  {}
+	@Override public void mouseExited(MouseEvent m)   {}
+	@Override public void mouseMoved(MouseEvent m)    {}
 }

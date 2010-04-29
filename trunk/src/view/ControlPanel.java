@@ -17,14 +17,13 @@ import control.*;
 
 public class ControlPanel extends JPanel{
 
-	private static final long serialVersionUID = -8040537962044433652L;
-	
+	private static final long serialVersionUID = -8040537962044433652L;	
 	
 	Player p1 = new Player("p1",Color.RED);
 	Player p2 = new Player("p2",Color.GREEN);
 	Player active = p1;
 	
-	private GameLogic gl = new GameLogic(5,5,5);
+	private GameLogic gl;
 	
 	private PinArea pinArea;
 	private JPanel  buttonArea;
@@ -37,8 +36,9 @@ public class ControlPanel extends JPanel{
 	
 	private Render render;	
 		
-	public ControlPanel(int width, int height, Render render) {
+	public ControlPanel(int width, int height, Render render, GameLogic gl) {
 		this.render = render;
+		this.gl = gl;
 		
 		GridBagLayout thisLayout = new GridBagLayout();
 		thisLayout.rowWeights = new double[] {0.1};
@@ -72,8 +72,10 @@ public class ControlPanel extends JPanel{
 
 				public void actionPerformed(ActionEvent evt) {					
 					ArrayList<Point> pt = pinArea.getSelectedPins();
-					if(pt.size() == 1)
+					if(pt.size() == 1) {
+						System.out.println(pt.get(0).x + " " + pt.get(0).y);
 						gl.place(pt.get(0).x, pt.get(0).y);
+					}
 				}
 			};
 		}
@@ -87,6 +89,7 @@ public class ControlPanel extends JPanel{
 
 				public void actionPerformed(ActionEvent evt) {
 					for(Point p : pinArea.getSelectedPins()){
+						System.out.println(p.x + " " + p.y);
 						render.switchPin(p.x, p.y);
 					}				
 				}

@@ -10,15 +10,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import javax.swing.AbstractAction;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JToolBar;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -33,6 +28,7 @@ import javax.swing.JToolBar;
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
 public class NewGame extends javax.swing.JPanel {
+	private static final long serialVersionUID = -8006283261844224326L;
 	
 	private MainFrame mf;
 	private JTextField player1TextField;
@@ -182,6 +178,8 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getHotSeatCheckBoxAction(){
 		if(getHotSeatCheckBoxAction == null) {
 			getHotSeatCheckBoxAction = new AbstractAction("", null) {
+				private static final long serialVersionUID = -2381311498380011349L;
+
 				public void actionPerformed(ActionEvent evt){
 					if(hotSeatCheckBox.isSelected()){
 						player1TextField.setEnabled(true);
@@ -204,6 +202,8 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getAICheckBoxAction(){
 		if(getAICheckBoxAction == null) {
 			getAICheckBoxAction = new AbstractAction("", null) {
+				private static final long serialVersionUID = -4532880389414923636L;
+
 				public void actionPerformed(ActionEvent evt){
 					if(aiCheckBox.isSelected()){
 						aiPlayerTextField.setEnabled(true);
@@ -226,6 +226,8 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getStartButtonAction(){
 		if(getStartButtonAction == null) {
 			getStartButtonAction = new AbstractAction("Start", null) {
+				private static final long serialVersionUID = -132098728087120287L;
+
 				public void actionPerformed(ActionEvent evt){
 					if(hotSeatCheckBox.isSelected()){
 						mf.startNewGame("Hot Seat");
@@ -246,6 +248,8 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getCancelButtonAction(){
 		if(getCancelButtonAction == null) {
 			getCancelButtonAction = new AbstractAction("Cancel", null) {
+				private static final long serialVersionUID = 1085655044529206578L;
+
 				public void actionPerformed(ActionEvent evt){
 					frame.dispose();					
 				}

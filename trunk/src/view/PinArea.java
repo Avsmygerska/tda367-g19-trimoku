@@ -53,17 +53,16 @@ public class PinArea extends JPanel{
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
-		this.add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
-				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		yButtons.setLayout(yButtonsLayout);
+		this.add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));		
 
 		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
+		xButtons.setLayout(xPanelLayout);
 		this.add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		xButtons.setLayout(xPanelLayout);	
 
-		GridLayout bxsLayout = new GridLayout(x, y);		
-		bxsLayout.setColumns(1);		
+		GridLayout bxsLayout = new GridLayout(x, y);
 		bxs.setLayout(bxsLayout);
 		this.add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -85,19 +84,19 @@ public class PinArea extends JPanel{
 		
 		// Add hider buttons for each row and column.
 
-		JButton raj;
+		JButton btn;
 		for(int i = 0; i < x; i++) {
-			raj = new JButton();			
-			raj.setMargin(new Insets(1,1,1,1));
-			raj.addActionListener(new Hider(raj,false,i));			
-			xButtons.add(raj);	
+			btn = new JButton();			
+			btn.setMargin(new Insets(1,1,1,1));
+			btn.addActionListener(new Hider(btn,false,i));			
+			xButtons.add(btn);	
 		}
 
 		for(int i = 0; i < y; i++) {
-			raj = new JButton();
-			raj.setMargin(new Insets(1,1,1,1));
-			raj.addActionListener(new Hider(raj,true,i));
-			yButtons.add(raj);
+			btn = new JButton();
+			btn.setMargin(new Insets(1,1,1,1));
+			btn.addActionListener(new Hider(btn,true,i));
+			yButtons.add(btn);
 		}
 
 	}
@@ -112,7 +111,7 @@ public class PinArea extends JPanel{
 		for(int i = 0; i < 5; i++)		 
 			for(int j = 0; j < 5; j++)
 				if(getPin(i,j).isSelected()) {
-					pts.add(new Point(i,j));
+					pts.add(new Point(j,i)); // Reversed order, since that's how the layout works.
 					getPin(i,j).setSelected(false);
 				}
 
@@ -126,7 +125,7 @@ public class PinArea extends JPanel{
 		public void paintComponent(Graphics g){
 			super.paintComponent(g);
 			g.setColor(Color.GREEN);
-			g.fillOval(5, 5, 10, 10);
+			g.fillRect(0, 0, 25, 25);
 		}
 	}
 

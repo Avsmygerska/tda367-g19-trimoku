@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
@@ -13,9 +12,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import model.*;
-
-
+import control.GameLogic;
 
 public class MainFrame extends javax.swing.JFrame {
 
@@ -31,31 +28,24 @@ public class MainFrame extends javax.swing.JFrame {
 
 	private JMenuBar MenuBar;
 	private JMenu jMenu1;
-
-	private String game;
+	
+	String game;
 	
 	private MainFrame hejochhopp = this;
 	
 	// Testing stuff
-
-	Board b;
-	Player active;
-	Player p1 = new Player("p1",Color.RED);
-	Player p2 = new Player("p2",Color.GREEN);	
-	//
-
-	public MainFrame(int x, int y, int z) {
+	GameLogic gameLogic;
+	
+	public MainFrame(GameLogic gameLogic) {
 		super();
+		this.gameLogic = gameLogic;
 		initGUI();
 	}
 
 	private void initGUI() {
 		BorderLayout thisLayout = new BorderLayout();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		getContentPane().setLayout(thisLayout);			
-
-		b = new Board(5,5,5);
-		active = p1;
+		getContentPane().setLayout(thisLayout);	
 
 		this.setResizable(false);
 
@@ -76,10 +66,9 @@ public class MainFrame extends javax.swing.JFrame {
 		setJMenuBar(MenuBar);
 		MenuBar.add(jMenu1);		
 
-		DDD = new RenderPanel(600,600);
-		DDD.getRender().setBoard(b);
+		DDD = new RenderPanel(600,600,gameLogic.getBoard());
 		getContentPane().add(DDD, BorderLayout.CENTER);
-		controlPanel = new ControlPanel(5,5,DDD.getRender());
+		controlPanel = new ControlPanel(5,5,DDD.getRender(),gameLogic);
 		getContentPane().add(controlPanel,BorderLayout.EAST);
 
 		pack();
@@ -89,6 +78,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private AbstractAction getExitGameAction() {
 		if(ExitGameAction == null) {
 			ExitGameAction = new AbstractAction("Exit Game", null) {
+				private static final long serialVersionUID = 891261472154540862L;
+
 				public void actionPerformed(ActionEvent evt) {
 					DDD.stop();
 					System.exit(0);
@@ -101,6 +92,8 @@ public class MainFrame extends javax.swing.JFrame {
 	private AbstractAction getNewGameAction(){
 		if(NewGameAction == null) {
 			NewGameAction = new AbstractAction("New Game", null) {
+				private static final long serialVersionUID = -5710960946166469906L;
+
 				public void actionPerformed(ActionEvent evt){
 					JFrame frame = new JFrame();
 					JPanel panel = new NewGame(hejochhopp, frame);
@@ -121,6 +114,6 @@ public class MainFrame extends javax.swing.JFrame {
 	
 	public void startNewGame(String game){
 		this.game = game;
-		b.clear();
+		gameLogic.reset(5,5,5); // Needs to get proper dimensions and stuff
 	}
 }

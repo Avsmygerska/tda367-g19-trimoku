@@ -6,18 +6,21 @@ public class User {
 	private Player player;
 	private Board board;
 	
+	public User(Player p) {
+		player = p;
+	}
+	
 	public User(Player p, Board b) {
 		player = p;
 		board = b;
-		
-		// Getting the waring mechanism to shut the hell up.		
-		player.hashCode();
-		board.hashCode();
+	}
+	
+	public void setBoard(Board board){
+		this.board = board;	
 	}
 	
 	public void doTurn() {
-		
-		
+		board.place(0, 0, player);		
 	}
 	
 	public Player getPlayer() {
