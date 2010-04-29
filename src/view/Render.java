@@ -8,34 +8,36 @@ import model.*;
 
 
 public class Render implements GLEventListener {
-	private float rquad = 0.0f;
 	
-	Board brd;
+	private Board board;
+	private GLU glu;
 
 	// Board       Width     Depth    Thickness 
 	private float w = 3.0f, d = 3.0f, t = 0.2f;
 
+	private float rquad = 250.0f;
+
+	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
+	private float[] lightDiffuse = {0.8f, 0.8f, 0.8f, 1f};
+	private float[] lightPosition = {0f, 10.0f, 0f, 1.0f};
+	
+	private float spacingX, spacingY;
+	
 	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
 	private float pSize = 0.4f; // Radius of a piece.
 
 	private int pX = 5, pY = 5, pZ = 5;
-
-	private boolean[][] pinVisible = new boolean[pX][pY];  
-
-	private float spacingX, spacingY;
-
-	private GLU glu = new GLU();
-
-	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
-	private float[] lightDiffuse = {0.8f, 0.8f, 0.8f, 1f};
-	private float[] lightPosition = {10.0f, 10.0f, 10.0f, 1.0f};
+	private boolean[][] pinVisible = new boolean[pX][pY];
 	
-	float[] col = {
-			1f,0f,0f,  // Red
-		    0f,1f,0f,  // Green
-		    0f,0f,1f}; // Blue
+	public Render(Board board) {
+		glu = new GLU();
+		setBoard(board);
+		
+	}
 	
-	int[] pl = {0,3};
+	public void setBoard(Board board) {
+		this.board = board;
+	}
 
 	// Ta det försiktigt här, vårt Z-led är GL:s Y-led.
 	public void display(GLAutoDrawable gLDrawable) {
@@ -48,7 +50,7 @@ public class Render implements GLEventListener {
 		// Set camera
 		glu.gluLookAt(
 				7f, 7f, 7f,  // Eyes
-				0f, 0f, 0f,  // Look at
+				0f, 1.5f, 0f,  // Look at
 				0f, 1f, 0f); // Up        
 
 		// Draw plate
@@ -69,7 +71,7 @@ public class Render implements GLEventListener {
 				if(pinVisible[x][y]) {
 					drawPin(gl);
 					int z = 0;
-					for(Player p : brd.getPin(x, y)) {
+					for(Player p : board.getPin(x, y)) {
 						drawPiece(gl,p);
 						gl.glTranslatef(0f,2*pSize,0f);
 						z++;
@@ -84,9 +86,7 @@ public class Render implements GLEventListener {
 		gl.glFlush();
 	}
 	
-	public void turn(float deg) {
-		rquad += deg;
-	}
+	public void turn(float deg) { rquad += deg; }
 
 	// Draws the bottom plate.
 	public void drawPlate(GL gl) {
@@ -153,7 +153,7 @@ public class Render implements GLEventListener {
 				pinVisible[no][y] = val;
 	}
 	
-	public void setCol(int no, boolean val) {		
+	public void setCol(int no, boolean val) {
 		if(no < pY)
 			for(int x = 0; x < pX; x++)
 				pinVisible[x][no] = val;
@@ -168,9 +168,7 @@ public class Render implements GLEventListener {
 		}
 	}
 	
-	public void setBoard(Board b) {
-		brd = b;
-	}
+
 	
 	public void init(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
