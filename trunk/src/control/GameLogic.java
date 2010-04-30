@@ -15,7 +15,7 @@ public class GameLogic {
 
 	public void reset(int x, int y, int z) {
 		players = new ArrayList<User>();
-		board = new Board(5,5,5);
+		board = new Board(x,y,z);
 	}
 
 	public void addPlayer(User p) { players.add(p); }
