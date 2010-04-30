@@ -20,23 +20,31 @@ public class Render implements GLEventListener {
 	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
 	private float[] lightDiffuse = {0.8f, 0.8f, 0.8f, 1f};
 	private float[] lightPosition = {0f, 10.0f, 0f, 1.0f};
-	
-	private float spacingX, spacingY;
-	
+		
 	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
 	private float pSize = 0.4f; // Radius of a piece.
 
-	private int pX = 5, pY = 5, pZ = 5;
-	private boolean[][] pinVisible = new boolean[pX][pY];
+	private int pX, pY, pZ; // Max number of pieces in X, Y and Z
+	private float spacingX = 1.25f, spacingY = 1.25f;
+	
+	private boolean[][] pinVisible;
 	
 	public Render(Board board) {
 		glu = new GLU();
-		setBoard(board);
-		
+		setBoard(board);		
 	}
 	
 	public void setBoard(Board board) {
 		this.board = board;
+		pX = board.getX();
+		pY = board.getY();
+		pZ = board.getZ();
+		
+		pinVisible = new boolean[pX][pY];
+		showPins(true);
+		
+		w = edge + (spacingX * (pX-1))/2;
+		d = edge + (spacingY * (pY-1))/2;
 	}
 
 	// Ta det försiktigt här, vårt Z-led är GL:s Y-led.
@@ -179,17 +187,12 @@ public class Render implements GLEventListener {
 		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
 		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
 
-		spacingX = (2*w - 2*edge)/(pX-1);
-		spacingY = (2*d - 2*edge)/(pY-1);
-
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, this.lightAmbient, 0);
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE, this.lightDiffuse, 0);
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, this.lightPosition, 0);
 		gl.glEnable(GL.GL_LIGHT1);
 		gl.glEnable(GL.GL_LIGHTING);
 		gl.glEnable(GL.GL_COLOR_MATERIAL);
-		
-		showPins(true);
 	}
 
 	public void reshape(GLAutoDrawable gLDrawable, int x, int y, int width, int height) {

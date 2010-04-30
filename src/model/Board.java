@@ -33,13 +33,17 @@ public class Board {
 	public ArrayList<Player> getPin(int x, int y) {
 		ArrayList<Player> pin = new ArrayList<Player>();
 		
-		for (int z = 0; z < maxX; z++) {
+		for (int z = 0; z < maxZ; z++) {
 			if(brd[x][y][z] == null)
 				break;
 			pin.add(brd[x][y][z]);			
 		}		
 		return pin;		
 	}
+	
+	public int getX() { return maxX; }
+	public int getY() { return maxY; }
+	public int getZ() { return maxZ; }
 	
 	public boolean tryPlace(int x, int y) {
 		if (x >= maxX || y >= maxY)
