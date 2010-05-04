@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.SwingUtilities;
 import view.*;
@@ -8,21 +9,39 @@ import control.*;
 
 
 
-public class Trimoku {	
-		
+public class Trimoku {
+	static MainFrame inst;
+
 	public static void main(String[] args) {
 		
+		final CountDownLatch cl = new CountDownLatch(1);
+
 		// Default game
 		final GameLogic gameLogic = new GameLogic(5,5,5);
-		gameLogic.addPlayer(new User(new Player("Player 1",Color.GREEN)));
-		gameLogic.addPlayer(new User(new Player("Player 2",Color.RED)));
-		
-		SwingUtilities.invokeLater(new Runnable() {
+
+		final Runnable t = new Runnable () {
 			public void run() {
-				MainFrame inst = new MainFrame(gameLogic);
-				inst.setLocationRelativeTo(null);
-				inst.setVisible(true);
+				
+				// Synchronization stuff
+				try { cl.await();
+				} catch (InterruptedException e) { e.printStackTrace();	}
+				
+				gameLogic.addUser(new LocalUser(new Player("Player 1",Color.GREEN),gameLogic.getBoard(),inst.getControlPanel()));
+				gameLogic.addUser(new LocalUser(new Player("Player 2",Color.RED),gameLogic.getBoard(),inst.getControlPanel()));				
+				gameLogic.run();
 			}
-		});
+		};	
+
+		SwingUtilities.invokeLater(
+				new Runnable() {
+					public void run() {
+						inst = new MainFrame(gameLogic);
+						inst.setLocationRelativeTo(null);
+						inst.setVisible(true);
+						cl.countDown();
+					}
+				});		
+
+		t.run();
 	}
 }

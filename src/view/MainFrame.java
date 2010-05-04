@@ -60,19 +60,19 @@ public class MainFrame extends javax.swing.JFrame {
 		jMenu1 = new JMenu();
 		jMenu1.setText("File");
 		jMenu1.add(NewGameMenuOption);
-		jMenu1.add(ExitGameMenuOption);		
-		
+		jMenu1.add(ExitGameMenuOption);
 		MenuBar = new JMenuBar();
 		setJMenuBar(MenuBar);
 		MenuBar.add(jMenu1);		
 
 		DDD = new RenderPanel(600,600,gameLogic.getBoard());
 		getContentPane().add(DDD, BorderLayout.CENTER);
-		controlPanel = new ControlPanel(5,5,DDD.getRender(),gameLogic);
+		controlPanel = new ControlPanel(5,5,DDD.getRender());
 		getContentPane().add(controlPanel,BorderLayout.EAST);
-
+		
 		pack();
 		DDD.start();
+		
 	}
 
 	private AbstractAction getExitGameAction() {
@@ -103,13 +103,15 @@ public class MainFrame extends javax.swing.JFrame {
 					frame.add(panel);
 					frame.pack();
 					frame.setVisible(true);
-				    
-					
 				}
 			};
 		}
 				
 		return NewGameAction;
+	}
+	
+	public ControlPanel getControlPanel() {
+		return controlPanel;
 	}
 	
 	public void startNewGame(String game){

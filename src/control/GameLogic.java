@@ -22,21 +22,28 @@ public class GameLogic {
 		return players.get(active).getPlayer().getName() + "s turn.";
 	}
 
-	public void addPlayer(User p) { players.add(p); }
+	public void addUser(User p) { players.add(p); }
 	public Board getBoard() { return board; }
-
-	public void place(int x, int y) {
-		if(!players.isEmpty()) {
-			Player p = players.get(active).getPlayer();
-			if(board.place(x, y, p)){
-				if(board.win(p)) {
-					System.out.println("Game over. " + p.getName() + " has won.");
-				}
-				
-				active = (active+1)%players.size();
+	
+	public void run () {
+		User u;		
+		while(true) {			
+			u = players.get(active);
+			u.doTurn();
+			
+			if(board.win(u.getPlayer())) {
+				System.out.println("Game over. " + u.getPlayer().getName() + " has won.");
+				break;
 			}
-		}
+			
+			/*  DRAWN GAME
+			if(board.win(u.getPlayer())) {
+				System.out.println("Game over. " + u.getPlayer().getName() + " has won.");
+				break;
+			}
+			*/
+			
+			active = (active+1)%players.size();
+		}		
 	}
-
-
 }
