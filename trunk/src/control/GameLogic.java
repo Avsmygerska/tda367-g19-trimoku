@@ -1,6 +1,13 @@
 package control;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
+
+import javax.swing.JFrame;
+
+import view.MainFrame;
+import view.NewGame;
+import view.WinPanel;
 
 import model.*;
 
@@ -8,6 +15,7 @@ public class GameLogic {
 	ArrayList<User> players;
 	int active;
 	Board board;
+	MainFrame mainframe;
 
 	public GameLogic (int x, int y, int z) {
 		reset(x,y,z);				
@@ -33,6 +41,7 @@ public class GameLogic {
 			u.doTurn();
 			
 			if(board.win(u.getPlayer())) {
+				mainframe.winGame(u);				
 				System.out.println("Game over. " + u.getPlayer().getName() + " has won.");
 				break;
 			}
@@ -46,5 +55,9 @@ public class GameLogic {
 			
 			active = (active+1)%players.size();
 		}		
+	}
+	
+	public void setMainFrame(MainFrame mf){
+		this.mainframe = mf;
 	}
 }
