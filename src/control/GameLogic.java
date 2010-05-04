@@ -16,6 +16,7 @@ public class GameLogic {
 	public void reset(int x, int y, int z) {
 		players = new ArrayList<User>();
 		board = new Board(x,y,z);
+		
 	}
 	
 	public String getNotice() {
