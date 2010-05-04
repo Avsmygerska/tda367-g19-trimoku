@@ -97,14 +97,7 @@ public class MainFrame extends javax.swing.JFrame {
 				private static final long serialVersionUID = -5710960946166469906L;
 
 				public void actionPerformed(ActionEvent evt){
-					JFrame frame = new JFrame();
-					NewGame newgame = new NewGame(hejochhopp, frame);
-					frame.setPreferredSize(new Dimension(500,400));
-					frame.setLocation(550, 280);
-					frame.setTitle("New Game");
-					frame.add(newgame);
-					frame.pack();
-					frame.setVisible(true);
+					newGame();
 				}
 			};
 		}
@@ -116,10 +109,20 @@ public class MainFrame extends javax.swing.JFrame {
 		return controlPanel;
 	}
 	
+	public void newGame(){
+		JFrame frame = new JFrame();
+		NewGame newgame = new NewGame(hejochhopp, frame);
+		frame.setPreferredSize(new Dimension(500,400));
+		frame.setLocation(550, 280);
+		frame.setTitle("New Game");
+		frame.add(newgame);
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
 	// Det utkommenterade skall vara med senare
 	
 	public void startNewGame(int gameMode, String player1, String player2, int boardSize){
-
 		gameLogic.reset(boardSize,boardSize,boardSize); // Needs to get proper dimensions and stuff
 
 		if(gameMode == 1){
@@ -131,5 +134,16 @@ public class MainFrame extends javax.swing.JFrame {
 			//gameLogic.addplayer(new AIUser(new AI()));
 		}
 		DDD.getRender().setBoard(gameLogic.getBoard());
+	}
+	
+	public void winGame(User u){
+		JFrame frame = new JFrame();
+		WinPanel winpanel = new WinPanel(u.getPlayer().getName(), MainFrame.this, frame);
+		frame.setPreferredSize(new Dimension(300,200));
+		frame.setLocation(450, 320);
+		frame.setTitle(u.getPlayer().getName() + " Wins!");
+		frame.add(winpanel);
+		frame.pack();
+		frame.setVisible(true);
 	}
 }

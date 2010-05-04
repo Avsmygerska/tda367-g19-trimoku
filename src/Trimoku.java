@@ -36,6 +36,7 @@ public class Trimoku {
 				new Runnable() {
 					public void run() {
 						inst = new MainFrame(gameLogic);
+						gameLogic.setMainFrame(inst);
 						inst.setLocationRelativeTo(null);
 						inst.setVisible(true);
 						cl.countDown();
