@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
@@ -12,7 +13,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import control.GameLogic;
+import model.Player;
+import control.*;
 
 public class MainFrame extends javax.swing.JFrame {
 
@@ -30,7 +32,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private JMenu jMenu1;
 	
 	String game;
-	
+		
 	private MainFrame hejochhopp = this;
 	
 	// Testing stuff
@@ -96,11 +98,11 @@ public class MainFrame extends javax.swing.JFrame {
 
 				public void actionPerformed(ActionEvent evt){
 					JFrame frame = new JFrame();
-					JPanel panel = new NewGame(hejochhopp, frame);
-					frame.setPreferredSize(new Dimension(500,500));	
+					NewGame newgame = new NewGame(hejochhopp, frame);
+					frame.setPreferredSize(new Dimension(500,400));
 					frame.setLocation(550, 280);
 					frame.setTitle("New Game");
-					frame.add(panel);
+					frame.add(newgame);
 					frame.pack();
 					frame.setVisible(true);
 				}
@@ -114,8 +116,20 @@ public class MainFrame extends javax.swing.JFrame {
 		return controlPanel;
 	}
 	
-	public void startNewGame(String game){
-		this.game = game;
-		gameLogic.reset(5,5,5); // Needs to get proper dimensions and stuff
+	// Det utkommenterade skall vara med senare
+	
+	public void startNewGame(int gameMode, String player1, String player2, int boardSize){
+
+		gameLogic.reset(boardSize,boardSize,boardSize); // Needs to get proper dimensions and stuff
+
+		if(gameMode == 1){
+			gameLogic.addUser(new LocalUser(new Player(player1, Color.red), gameLogic.getBoard(), controlPanel));
+			gameLogic.addUser(new LocalUser(new Player(player2, Color.green),gameLogic.getBoard(), controlPanel));
+		}
+		else{
+			gameLogic.addUser(new LocalUser(new Player(player1, Color.red), gameLogic.getBoard(), controlPanel));
+			//gameLogic.addplayer(new AIUser(new AI()));
+		}
+		DDD.getRender().setBoard(gameLogic.getBoard());
 	}
 }

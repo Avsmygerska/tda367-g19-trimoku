@@ -198,7 +198,7 @@ public class PinArea extends JPanel{
 			}else {
 				button.setText(t);
 			}
-
+			
 		}
 	}
 }
