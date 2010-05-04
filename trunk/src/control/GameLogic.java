@@ -17,6 +17,10 @@ public class GameLogic {
 		players = new ArrayList<User>();
 		board = new Board(x,y,z);
 	}
+	
+	public String getNotice() {
+		return players.get(active).getPlayer().getName() + "s turn.";
+	}
 
 	public void addPlayer(User p) { players.add(p); }
 	public Board getBoard() { return board; }
@@ -28,6 +32,7 @@ public class GameLogic {
 				if(board.win(p)) {
 					System.out.println("Game over. " + p.getName() + " has won.");
 				}
+				
 				active = (active+1)%players.size();
 			}
 		}
