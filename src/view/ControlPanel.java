@@ -12,7 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ControlPanel extends JPanel{
+public class ControlPanel extends JPanel implements Notifier{
 
 	private static final long serialVersionUID = -8040537962044433652L;
 	private PinArea pinArea;
@@ -30,8 +30,8 @@ public class ControlPanel extends JPanel{
 
 	private Point placePoint;
 	CountDownLatch latch;
-
-	public ControlPanel(int width, int height, Render render) {
+	
+	public ControlPanel(Render render) {
 		this.render = render;
 
 		this.setLayout(new BorderLayout());
@@ -51,13 +51,16 @@ public class ControlPanel extends JPanel{
 
 		notice = new JLabel();		
 
-		pinArea = new PinArea(width, height, render);
+		pinArea = new PinArea(1, 1, render);
+		
 		add(pinArea,BorderLayout.NORTH);		
 		add(buttonArea,BorderLayout.CENTER);
 		add(notice,BorderLayout.SOUTH);
+		
+		latch = new CountDownLatch(0);
 
 		active(false);
-	}
+	}	
 
 	public void active(boolean val) {
 		placeButton.setEnabled(val);
@@ -65,16 +68,14 @@ public class ControlPanel extends JPanel{
 		pinArea.active(val);		
 	}
 
-	public Point doTurn(String notice) {
+	public Point doTurn() {
 		
 		latch = new CountDownLatch(1);
-
-		setNotice(notice);
 		active(true);
 		
 		try {
 			// Waiting for user input.
-			latch.await();
+			latch.await();			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -82,12 +83,19 @@ public class ControlPanel extends JPanel{
 		active(false);
 		
 		render.showPins(true);
-
+		
+		System.out.println("Done waiting.");
 		return placePoint;
 	}
-
-	public void setNotice(String s) {
+	
+	@Override
+	public void notifyTurn(String s) {
 		notice.setText(s);
+	}
+	
+	public void updateModel(int x, int y) {
+		pinArea.constructButtons(x, y);
+		latch.countDown(); // Ugly, but I can't see how to do it otherwise.
 	}
 
 	private AbstractAction getPlaceAction() {
@@ -97,7 +105,7 @@ public class ControlPanel extends JPanel{
 
 				public void actionPerformed(ActionEvent evt) {					
 					ArrayList<Point> pt = pinArea.getSelectedPins();
-					if(pt.size() == 1) {
+					if(pt.size() == 1) {						
 						placePoint = pt.get(0);
 						latch.countDown();
 					}
@@ -121,6 +129,10 @@ public class ControlPanel extends JPanel{
 		return hideAction;
 	}
 
-
-
+	public void activatePostGameControls() {
+		placeButton.setEnabled(false);
+		hideButton.setEnabled(true);
+		pinArea.active(true);		
+	}
+	
 }

@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 public class WinPanel extends JPanel{
 	
+	private static final long serialVersionUID = 5235829744803819437L;
 	private String winner;
 	private MainFrame mf;
 	private JFrame frame;

@@ -59,7 +59,7 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getAICheckBoxAction;
 	private AbstractAction getStartButtonAction;
 	private AbstractAction getCancelButtonAction;
-	private AbstractAction getCheckBoxBoardSizeAction;
+	//private AbstractAction getCheckBoxBoardSizeAction;
 	private JFrame frame;
 
 	/**
@@ -171,11 +171,13 @@ public class NewGame extends javax.swing.JPanel {
 				checkBoxBoardSize3x3 = new JCheckBox();
 				checkBoxBoardSize3x3.setAction(getBoardSizeAction());
 				
-				checkBoxBoardSize5x5 = new JCheckBox();
-				checkBoxBoardSize5x5.setAction(getBoardSizeAction);
-							
 				checkBoxBoardSize4x4 = new JCheckBox();
 				checkBoxBoardSize4x4.setAction(getBoardSizeAction);
+				
+				checkBoxBoardSize5x5 = new JCheckBox();
+				checkBoxBoardSize5x5.setAction(getBoardSizeAction);
+				checkBoxBoardSize5x5.setSelected(true);
+				boardSize = 5;
 				
 				this.add(buttonCancelNewGame, new GridBagConstraints(2, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				this.add(getBoardSizeLabel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
@@ -294,13 +296,13 @@ public class NewGame extends javax.swing.JPanel {
 
 				public void actionPerformed(ActionEvent evt){
 					if(hotSeatCheckBox.isSelected()){
-						mf.startNewGame(1, getPlayer1TextField(), getPlayer2TextField(), boardSize);
+						mf.startNewGame(1, getPlayer1TextField(), getPlayer2TextField(), boardSize,boardSize,boardSize);
 						frame.dispose();
 						
 					}
 					if(aiCheckBox.isSelected()){
 					
-						mf.startNewGame(2, getAIPlayerTextField(), "" , boardSize );
+						mf.startNewGame(2, getAIPlayerTextField(), "" , boardSize,boardSize, boardSize );
 						frame.dispose();
 					}
 					
@@ -325,6 +327,7 @@ public class NewGame extends javax.swing.JPanel {
 		return getCancelButtonAction;
 	}
 	
+	/*
 	private AbstractAction getCheckBoxBoardSizeAction(){
 		if(getCheckBoxBoardSizeAction == null) {
 			getCheckBoxBoardSizeAction = new AbstractAction("", null) {
@@ -339,12 +342,15 @@ public class NewGame extends javax.swing.JPanel {
 			};
 		}
 				
-		return getAICheckBoxAction;
+		return getCheckBoxBoardSizeAction;
 	}
+	*/
 	
 	private AbstractAction getBoardSizeAction() {
 		if(getBoardSizeAction == null) {
 			getBoardSizeAction = new AbstractAction("", null) {
+				private static final long serialVersionUID = 6789890595330428545L;
+
 				public void actionPerformed(ActionEvent evt) {
 					if(evt.getSource().equals(checkBoxBoardSize3x3)){
 						checkBoxBoardSize4x4.setSelected(false);

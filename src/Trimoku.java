@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import javax.swing.SwingUtilities;
@@ -16,33 +17,25 @@ public class Trimoku {
 		
 		final CountDownLatch cl = new CountDownLatch(1);
 
-		// Default game
-		final GameLogic gameLogic = new GameLogic(5,5,5);
-
-		final Runnable t = new Runnable () {
-			public void run() {
-				
-				// Synchronization stuff
-				try { cl.await();
-				} catch (InterruptedException e) { e.printStackTrace();	}
-				
-				gameLogic.addUser(new LocalUser(new Player("Player 1",Color.GREEN),gameLogic.getBoard(),inst.getControlPanel()));
-				gameLogic.addUser(new LocalUser(new Player("Player 2",Color.RED),gameLogic.getBoard(),inst.getControlPanel()));				
-				gameLogic.run();
-			}
-		};	
-
 		SwingUtilities.invokeLater(
 				new Runnable() {
 					public void run() {
-						inst = new MainFrame(gameLogic);
-						gameLogic.setMainFrame(inst);
+						inst = new MainFrame();
 						inst.setLocationRelativeTo(null);
 						inst.setVisible(true);
 						cl.countDown();
 					}
-				});		
-
-		t.run();
+				});
+		
+		try { cl.await();
+		} catch (InterruptedException e) { e.printStackTrace();	}		
+		
+		final GameLogic gameLogic = new GameLogic(inst);
+		ArrayList<User> players = new ArrayList<User>();		
+		players.add(new LocalUser(new Player("Player 1",Color.GREEN),inst.getControlPanel()));
+		players.add(new LocalUser(new Player("Player 2",Color.RED),inst.getControlPanel()));
+		
+		gameLogic.configure(5, 5, 5, players);
+		gameLogic.run();
 	}
 }

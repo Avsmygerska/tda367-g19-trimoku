@@ -5,23 +5,24 @@ import java.awt.Point;
 import model.*;
 import view.*;
 
-public class LocalUser extends User {	
-	private Board board;
+public class LocalUser extends User {
 	private ControlPanel controlPanel;
 	
-	public LocalUser(Player p, Board b, ControlPanel cp) {
-		setPlayer(p);
-		board = b;
+	public LocalUser(Player p, ControlPanel cp) {
+		super(p);		
 		this.controlPanel = cp;
 	}
 	
-	public void setBoard(Board board){
-		this.board = board;	
-	}
-	
-	public void doTurn() {
-		Point pt = controlPanel.doTurn(getPlayer().getName() + "s turn.");
-		board.place(pt.x, pt.y,getPlayer());		
+	public void doTurn(Board b) {		
+		Point pt = controlPanel.doTurn();
+		if(pt == null) {
+			System.out.println("I got told to stop waitin'.");
+			return;
+		}
+		while(!b.place(pt.x, pt.y,getPlayer())) {
+			pt = controlPanel.doTurn();			
+		}
+		System.out.println("Puttin' a piece.");
 	}
 	
 }

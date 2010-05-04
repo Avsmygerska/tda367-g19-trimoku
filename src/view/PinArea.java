@@ -35,8 +35,11 @@ public class PinArea extends JPanel{
 	private JPanel marker;
 	private Render render;
 
-	public PinArea(int x, int y, Render render) {
+	int maxX, maxY;
+	
+	public PinArea(Render render) {
 		this.render = render;
+		
 		bxs = new JPanel();
 		xButtons = new JPanel();
 		yButtons = new JPanel();
@@ -48,58 +51,108 @@ public class PinArea extends JPanel{
 		thisLayout.rowHeights = new int[] {7, 7, 7, 7};
 		thisLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
 		thisLayout.columnWidths = new int[] {7, 7, 7, 7};
-		this.setLayout(thisLayout);
-		
-		this.add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
+		setLayout(thisLayout);
+
+		add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
 		yButtons.setLayout(yButtonsLayout);
-		this.add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
+		add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));		
 
 		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
 		xButtons.setLayout(xPanelLayout);
-		this.add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
+		add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+		add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		
+		
+		
+	}
+	public PinArea(int x, int y, Render render) {
+		this.render = render;
+		maxX = x;
+		maxY = y;
+
+		bxs = new JPanel();
+		xButtons = new JPanel();
+		yButtons = new JPanel();
+		marker = new MarkerPanel();
+
+		// Layout stuff
+		GridBagLayout thisLayout = new GridBagLayout();
+		thisLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
+		thisLayout.rowHeights = new int[] {7, 7, 7, 7};
+		thisLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
+		thisLayout.columnWidths = new int[] {7, 7, 7, 7};
+		setLayout(thisLayout);
+
+		add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
+		yButtons.setLayout(yButtonsLayout);
+		add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
+				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));		
+
+		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
+		xButtons.setLayout(xPanelLayout);
+		add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		GridLayout bxsLayout = new GridLayout(x, y);
 		bxs.setLayout(bxsLayout);
-		this.add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
+		add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		
+		constructButtons(x,y);
+	}
 
-
+	public void constructButtons(int x, int y) {
+		xButtons.removeAll();
+		yButtons.removeAll();
+		bxs.removeAll();
+		GridLayout bxsLayout = new GridLayout(x, y);
+		bxs.setLayout(bxsLayout);
+				
+		maxX = x;
+		maxY = y;
+		
+		
 		// Add the check boxes to the panel and the storing data structure
 		Boxes = new ArrayList<ArrayList<JCheckBox>>();
 		JCheckBox t;
 		ArrayList<JCheckBox> tmp;
-		for(int i = 0; i < x; i++) {			
+		for(int i = 0; i < maxX; i++) {			
 			tmp = new ArrayList<JCheckBox>(); 
-			for(int j = 0; j < y; j++) {
+			for(int j = 0; j < maxY; j++) {
 				t = new JCheckBox();
 				bxs.add(t);
 				tmp.add(t);				
 			}
 			Boxes.add(tmp);
 		}
-		
+
 		// Add hider buttons for each row and column.
 
 		JButton btn;
-		for(int i = 0; i < x; i++) {
+		for(int i = 0; i < maxX; i++) {
 			btn = new JButton();			
 			btn.setMargin(new Insets(1,1,1,1));
 			btn.addActionListener(new Hider(btn,false,i));			
 			xButtons.add(btn);	
 		}
 
-		for(int i = 0; i < y; i++) {
+		for(int i = 0; i < maxY; i++) {
 			btn = new JButton();
 			btn.setMargin(new Insets(1,1,1,1));
 			btn.addActionListener(new Hider(btn,true,i));
 			yButtons.add(btn);
 		}
-
+		
 	}
 
 	public JCheckBox getPin(int i, int j){
@@ -109,8 +162,8 @@ public class PinArea extends JPanel{
 	public ArrayList<Point> getSelectedPins () {
 		ArrayList<Point> pts = new ArrayList<Point>();
 
-		for(int i = 0; i < 5; i++)		 
-			for(int j = 0; j < 5; j++)
+		for(int i = 0; i < maxX; i++)
+			for(int j = 0; j < maxY; j++)
 				if(getPin(i,j).isSelected()) {
 					pts.add(new Point(j,i)); // Reversed order, since that's how the layout works.
 					getPin(i,j).setSelected(false);
@@ -118,19 +171,19 @@ public class PinArea extends JPanel{
 
 		return pts;
 	}
-	
+
 
 	public void active(boolean val) {
 		for (Component c : xButtons.getComponents())
 			c.setEnabled(val);
-		
+
 		for (Component c : yButtons.getComponents())
 			c.setEnabled(val);
-		
+
 		for (Component c : bxs.getComponents())
 			c.setEnabled(val);
 	}
-	
+
 	class MarkerPanel extends JPanel {
 		private static final long serialVersionUID = -467353064175378414L;
 
@@ -198,7 +251,7 @@ public class PinArea extends JPanel{
 			}else {
 				button.setText(t);
 			}
-			
+
 		}
 	}
 }
