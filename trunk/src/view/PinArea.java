@@ -9,6 +9,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -116,6 +117,18 @@ public class PinArea extends JPanel{
 				}
 
 		return pts;
+	}
+	
+
+	public void active(boolean val) {
+		for (Component c : xButtons.getComponents())
+			c.setEnabled(val);
+		
+		for (Component c : yButtons.getComponents())
+			c.setEnabled(val);
+		
+		for (Component c : bxs.getComponents())
+			c.setEnabled(val);
 	}
 	
 	class MarkerPanel extends JPanel {
