@@ -29,6 +29,10 @@ public class Render implements GLEventListener {
 	
 	private boolean[][] pinVisible;
 	
+	public Render() {
+		glu = new GLU();
+	}
+	
 	public Render(Board board) {
 		glu = new GLU();
 		setBoard(board);		
@@ -54,6 +58,9 @@ public class Render implements GLEventListener {
 		gl.glLoadIdentity();                   
 
 		gl.glColorMaterial(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE);
+		
+		if(board == null)
+			return;
 
 		// Set camera
 		glu.gluLookAt(
@@ -175,8 +182,6 @@ public class Render implements GLEventListener {
 			}
 		}
 	}
-	
-
 	
 	public void init(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();

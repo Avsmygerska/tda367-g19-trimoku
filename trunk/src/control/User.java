@@ -1,13 +1,16 @@
 package control;
-
 import model.*;
 
 public abstract class User {
 	
-	private Player player;	
+	private Player player;
+	
+	public User(Player p) {
+		player = p;
+	}
+	
 	public Player getPlayer() { return player; }
 	protected void setPlayer(Player p) { player = p; }
-	
-	public abstract void doTurn();
+	public abstract void doTurn(Board b);
 
 }

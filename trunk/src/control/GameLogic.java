@@ -1,62 +1,72 @@
 package control;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
-
-import javax.swing.JFrame;
-
 import view.MainFrame;
-import view.NewGame;
-import view.WinPanel;
+import view.UserInterface;
+
+import java.util.concurrent.CountDownLatch;
 
 import model.*;
 
 public class GameLogic {
-	ArrayList<User> players;
-	int active;
-	Board board;
+	
+	private ArrayList<User> players;
+	private int active;
+	private Board board;
 	MainFrame mainframe;
+	CountDownLatch ready;
+	
+	UserInterface ui;
 
-	public GameLogic (int x, int y, int z) {
-		reset(x,y,z);				
-	}
-
-	public void reset(int x, int y, int z) {
-		players = new ArrayList<User>();
-		board = new Board(x,y,z);
-		
+	public GameLogic (UserInterface ui) {
+		setUserInterface(ui);
+		ready = new CountDownLatch(0);
 	}
 	
-	public String getNotice() {
-		return players.get(active).getPlayer().getName() + "s turn.";
+	public void setUserInterface(UserInterface ui) {
+		System.out.println("Connecting Logic to UI.");
+		this.ui = ui;
+		ui.setGameLogic(this);
 	}
 
-	public void addUser(User p) { players.add(p); }
-	public Board getBoard() { return board; }
+	public void configure (int x, int y, int z, ArrayList<User> players) {				
+		board = new Board(x,y,z);
+		ui.updateModel(board);
+		this.players = players;
+		active = 0;
+		ready.countDown();
+	}
 	
 	public void run () {
-		User u;		
-		while(true) {			
-			u = players.get(active);
-			u.doTurn();
-			
-			if(board.win(u.getPlayer())) {
-				mainframe.winGame(u);				
-				System.out.println("Game over. " + u.getPlayer().getName() + " has won.");
-				break;
+		User u;
+		while(true) {
+			try {
+				// Wait for the configuration to complete.
+				ready.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			
-			/*  DRAWN GAME
+			u = players.get(active);			
+			ui.getNotifier().notifyTurn("It is your turn " + u.getPlayer().getName());
+			u.doTurn(board);
 			if(board.win(u.getPlayer())) {
-				System.out.println("Game over. " + u.getPlayer().getName() + " has won.");
-				break;
+				// The active player won.
+				ready = new CountDownLatch(1);
+				ui.wonGame(u);
+				ui.getNotifier().notifyTurn((u.getPlayer().getName() + " has won."));
+				ui.activatePostGameControls();
+			} else if(board.isFull()) {
+				// Drawn game.
+				ready = new CountDownLatch(1);
+				ui.drawnGame();
+				System.out.println("Drawn game.");
+			} else {
+				// Next player;
+				active = (active+1)%players.size();
 			}
-			*/
-			
-			active = (active+1)%players.size();
-		}		
+		}
 	}
-	
+
 	public void setMainFrame(MainFrame mf){
 		this.mainframe = mf;
 	}

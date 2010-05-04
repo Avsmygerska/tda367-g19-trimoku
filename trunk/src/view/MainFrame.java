@@ -4,19 +4,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import model.Board;
 import model.Player;
 import control.*;
 
-public class MainFrame extends javax.swing.JFrame {
+public class MainFrame extends JFrame implements UserInterface {
 
 	private static final long serialVersionUID = 8261482053967412810L;
 	private RenderPanel DDD;
@@ -36,11 +37,10 @@ public class MainFrame extends javax.swing.JFrame {
 	private MainFrame hejochhopp = this;
 	
 	// Testing stuff
-	GameLogic gameLogic;
+	GameLogic gameLogic;	
 	
-	public MainFrame(GameLogic gameLogic) {
+	public MainFrame() {
 		super();
-		this.gameLogic = gameLogic;
 		initGUI();
 	}
 
@@ -67,14 +67,13 @@ public class MainFrame extends javax.swing.JFrame {
 		setJMenuBar(MenuBar);
 		MenuBar.add(jMenu1);		
 
-		DDD = new RenderPanel(600,600,gameLogic.getBoard());
+		DDD = new RenderPanel(600,600);
 		getContentPane().add(DDD, BorderLayout.CENTER);
-		controlPanel = new ControlPanel(5,5,DDD.getRender());
+		controlPanel = new ControlPanel(DDD.getRender());
 		getContentPane().add(controlPanel,BorderLayout.EAST);
 		
 		pack();
-		DDD.start();
-		
+		DDD.start();		
 	}
 
 	private AbstractAction getExitGameAction() {
@@ -122,21 +121,25 @@ public class MainFrame extends javax.swing.JFrame {
 	
 	// Det utkommenterade skall vara med senare
 	
-	public void startNewGame(int gameMode, String player1, String player2, int boardSize){
-		gameLogic.reset(boardSize,boardSize,boardSize); // Needs to get proper dimensions and stuff
-
+	public void startNewGame(int gameMode, String player1, String player2, int xSize, int ySize, int zSize){
+		ArrayList<User> players = new ArrayList<User>();
+		players.add(new LocalUser(new Player(player1, Color.GREEN), controlPanel));		
 		if(gameMode == 1){
-			gameLogic.addUser(new LocalUser(new Player(player1, Color.red), gameLogic.getBoard(), controlPanel));
-			gameLogic.addUser(new LocalUser(new Player(player2, Color.green),gameLogic.getBoard(), controlPanel));
+			players.add(new LocalUser(new Player(player2, Color.RED), controlPanel));
 		}
-		else{
-			gameLogic.addUser(new LocalUser(new Player(player1, Color.red), gameLogic.getBoard(), controlPanel));
-			//gameLogic.addplayer(new AIUser(new AI()));
-		}
-		DDD.getRender().setBoard(gameLogic.getBoard());
+		else{			
+			players.add(new AIUser(new Player("AI",Color.RED)));
+		}		
+		gameLogic.configure(xSize, ySize, zSize, players);
 	}
-	
-	public void winGame(User u){
+
+	@Override
+	public void drawnGame() {
+		// TODO		
+	}
+
+	@Override
+	public void wonGame(User u) {
 		JFrame frame = new JFrame();
 		WinPanel winpanel = new WinPanel(u.getPlayer().getName(), MainFrame.this, frame);
 		frame.setPreferredSize(new Dimension(300,200));
@@ -144,6 +147,29 @@ public class MainFrame extends javax.swing.JFrame {
 		frame.setTitle(u.getPlayer().getName() + " Wins!");
 		frame.add(winpanel);
 		frame.pack();
-		frame.setVisible(true);
+		frame.setVisible(true);		
+	}
+
+	@Override
+	public void updateModel(Board board) {
+		DDD.getRender().setBoard(board);
+		controlPanel.updateModel(board.getX(), board.getY());
+		pack();
+	}
+	
+	@Override
+	public Notifier getNotifier() {
+		return controlPanel;
+	}
+
+	@Override
+	public void setGameLogic(GameLogic gl) {
+		gameLogic = gl;		
+	}
+
+	@Override
+	public void activatePostGameControls() {
+		controlPanel.activatePostGameControls();
+		
 	}
 }

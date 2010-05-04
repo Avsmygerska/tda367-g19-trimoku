@@ -4,14 +4,9 @@ import java.util.ArrayList;
 
 public class Board {
 	
-	//ArrayList<ArrayList<ArrayList<Player>>> brd;
-	public AI ai;
 	Player[][][] brd;
-	Player NO_PLAYER = new Player("NO_PLAYER",0,0,0);
 	
-	int maxX;
-	int maxY;
-	int maxZ;
+	private int maxX, maxY, maxZ;
 	
 	
 	public Board(int x, int y, int z) {
@@ -20,13 +15,12 @@ public class Board {
 		maxZ = z;
 		
 		brd = new Player[maxX][maxY][maxZ];
-		ai = new AI(this);
 	}
 	
+	// Could return a null pointer, if there is no peice at the specified place.
 	public Player peek(int x, int y, int z) {
-		if(brd[x][y][z] == null){
-			return NO_PLAYER;
-		}
+		if(!(x < maxX && y < maxY && z < maxZ))
+			return null;
 		return brd[x][y][z];		
 	}
 		
@@ -43,7 +37,7 @@ public class Board {
 	
 	public int getX() { return maxX; }
 	public int getY() { return maxY; }
-	public int getZ() { return maxZ; }
+	public int getZ() { return maxZ; }	
 	
 	public boolean tryPlace(int x, int y) {
 		if (x >= maxX || y >= maxY)
@@ -71,6 +65,15 @@ public class Board {
 		return false;
 	}
 	
+	public boolean isFull() {
+		for(int x = 0; x < maxX;x++)
+			for(int y = 0; y < maxY;y++)
+				for(int z = 0; z < maxZ;z++)
+					if(brd[x][y][z] == null)
+						return false;
+		return true;
+	}
+	
 	public boolean win(Player p) {
 		
 		if(checkX(p)){
@@ -89,7 +92,7 @@ public class Board {
 		return false;
 	}
 	
-	public boolean checkX(Player p){
+	private boolean checkX(Player p){
 		// Check if a player have 5 in a row in the X-dimension
 		for(int y = 0; y < maxY; y++){			
 			for(int z = 0; z < maxZ; z++) {
@@ -128,7 +131,7 @@ public class Board {
 		return false;
 	}
 	
-	public boolean checkY(Player p){
+	private boolean checkY(Player p){
 		
 		// Check if a player have 5 in a row in the Y-dimension
 		for(int x = 0; x < maxX; x++){			
@@ -168,7 +171,7 @@ public class Board {
 		return false;
 	}
 	
-	public boolean checkZ(Player p){
+	private boolean checkZ(Player p){
 		
 		// Check if a player have 5 in a row in the Z-dimension
 		for(int x = 0; x < maxX; x++){
@@ -206,7 +209,7 @@ public class Board {
 		return false;
 	}
 	
-	public boolean checkInnerDiagonals(Player p){
+	private boolean checkInnerDiagonals(Player p){
 		
 		/* 
 	 		Here we want to check if a player have won in two of the inner diagonals.

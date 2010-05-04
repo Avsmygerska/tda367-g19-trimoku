@@ -19,6 +19,24 @@ public class RenderPanel extends JPanel{
 	private FPSAnimator animator;
 	private CMA cma;
 	
+	
+	RenderPanel(int dimX, int dimY) {
+		render = new Render();
+		cma = new CMA(render);
+		
+		glCanvas = new GLCanvas(new GLCapabilities());
+		glCanvas.setSize(dimX, dimY);
+		glCanvas.setIgnoreRepaint(true);
+		glCanvas.addGLEventListener(render);
+		glCanvas.addMouseListener(cma);
+		glCanvas.addMouseMotionListener(cma);
+		
+		add(glCanvas);	
+		
+		animator = new FPSAnimator(glCanvas, 60);
+        animator.setRunAsFastAsPossible(false);		
+	}
+	
 	RenderPanel(int dimX, int dimY, Board b) {
 		render = new Render(b);
 		cma = new CMA(render);
