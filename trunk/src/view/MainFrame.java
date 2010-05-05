@@ -124,12 +124,10 @@ public class MainFrame extends JFrame implements UserInterface {
 	public void startNewGame(int gameMode, String player1, String player2, int xSize, int ySize, int zSize){
 		ArrayList<User> players = new ArrayList<User>();
 		players.add(new LocalUser(new Player(player1, Color.GREEN), controlPanel));		
-		if(gameMode == 1){
+		if(gameMode == 1)
 			players.add(new LocalUser(new Player(player2, Color.RED), controlPanel));
-		}
-		else{			
+		else
 			players.add(new AIUser(new Player("AI",Color.RED)));
-		}		
 		gameLogic.configure(xSize, ySize, zSize, players);
 	}
 
@@ -168,7 +166,7 @@ public class MainFrame extends JFrame implements UserInterface {
 	}
 
 	@Override
-	public void activatePostGameControls() {
+	public void postGame() {
 		controlPanel.activatePostGameControls();
 		
 	}

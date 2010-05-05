@@ -59,20 +59,7 @@ public class NewGame extends javax.swing.JPanel {
 	private AbstractAction getAICheckBoxAction;
 	private AbstractAction getStartButtonAction;
 	private AbstractAction getCancelButtonAction;
-	//private AbstractAction getCheckBoxBoardSizeAction;
 	private JFrame frame;
-
-	/**
-	* Auto-generated main method to display this 
-	* JPanel inside a new JFrame.
-	*/
-/*	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(new NewGame());
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
-	}*/
 	
 	public NewGame(MainFrame mf, JFrame frame) {
 		super();
@@ -104,7 +91,7 @@ public class NewGame extends javax.swing.JPanel {
 				player1TextField = new JTextField();
 				player1TextField.setSize(40, 20);
 				this.add(player1TextField, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-				player1TextField.setPreferredSize(new java.awt.Dimension(102, 22));
+				player1TextField.setPreferredSize(new java.awt.Dimension(101, 22));
 				player1TextField.setEnabled(false);
 			}
 			{
@@ -127,10 +114,10 @@ public class NewGame extends javax.swing.JPanel {
 			{
 				aiPlayerLabel = new JLabel();
 				this.add(aiPlayerLabel, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-				aiPlayerLabel.setText("Player");
 			}
 			{
 				aiPlayerTextField = new JTextField();
+				aiPlayerTextField.setText("Player");
 				this.add(aiPlayerTextField, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				aiPlayerTextField.setPreferredSize(new java.awt.Dimension(98, 22));
 				aiPlayerTextField.setEnabled(false);
@@ -176,8 +163,15 @@ public class NewGame extends javax.swing.JPanel {
 				
 				checkBoxBoardSize5x5 = new JCheckBox();
 				checkBoxBoardSize5x5.setAction(getBoardSizeAction);
+				
+				// Default settings.
 				checkBoxBoardSize5x5.setSelected(true);
 				boardSize = 5;
+				aiPlayerTextField.setText("Player");
+				player1TextField.setText("Player1");
+				player2TextField.setText("Player2");
+				// ----------------
+				
 				
 				this.add(buttonCancelNewGame, new GridBagConstraints(2, 7, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 				this.add(getBoardSizeLabel(), new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));

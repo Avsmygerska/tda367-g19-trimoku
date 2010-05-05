@@ -52,12 +52,14 @@ public class GameLogic {
 			if(board.win(u.getPlayer())) {
 				// The active player won.
 				ready = new CountDownLatch(1);
-				ui.wonGame(u);
 				ui.getNotifier().notifyTurn((u.getPlayer().getName() + " has won."));
-				ui.activatePostGameControls();
+				ui.postGame();
+				ui.wonGame(u);				
 			} else if(board.isFull()) {
 				// Drawn game.
 				ready = new CountDownLatch(1);
+				ui.getNotifier().notifyTurn("Drawn game.");
+				ui.postGame();
 				ui.drawnGame();
 				System.out.println("Drawn game.");
 			} else {

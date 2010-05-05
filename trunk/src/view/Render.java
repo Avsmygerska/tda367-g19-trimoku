@@ -15,7 +15,8 @@ public class Render implements GLEventListener {
 	// Board       Width     Depth    Thickness 
 	private float w = 3.0f, d = 3.0f, t = 0.2f;
 
-	private float rquad = 250.0f;
+	private float defaultRotation = 250.0f;
+	private float rotation = 250.0f;
 
 	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
 	private float[] lightDiffuse = {0.8f, 0.8f, 0.8f, 1f};
@@ -24,7 +25,7 @@ public class Render implements GLEventListener {
 	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
 	private float pSize = 0.4f; // Radius of a piece.
 
-	private int pX, pY, pZ; // Max number of pieces in X, Y and Z
+	private int pX, pY, pZ; // Number of positions in X, Y and Z
 	private float spacingX = 1.25f, spacingY = 1.25f;
 	
 	private boolean[][] pinVisible;
@@ -49,6 +50,8 @@ public class Render implements GLEventListener {
 		
 		w = edge + (spacingX * (pX-1))/2;
 		d = edge + (spacingY * (pY-1))/2;
+		
+		rotation = defaultRotation;
 	}
 
 	// Ta det försiktigt här, vårt Z-led är GL:s Y-led.
@@ -64,12 +67,12 @@ public class Render implements GLEventListener {
 
 		// Set camera
 		glu.gluLookAt(
-				7f, 7f, 7f,  // Eyes
-				0f, 1.5f, 0f,  // Look at
-				0f, 1f, 0f); // Up        
+				7f, 7f, 7f,   // Eyes
+				0f, 1.5f, 0f, // Look at
+				0f, 1f, 0f);  // Up        
 
 		// Draw plate
-		gl.glRotatef(rquad, 0f, 1f, 0f);    	
+		gl.glRotatef(rotation, 0f, 1f, 0f);    	
 		drawPlate(gl);
 
 		// Top left and bottom right marker
@@ -101,7 +104,7 @@ public class Render implements GLEventListener {
 		gl.glFlush();
 	}
 	
-	public void turn(float deg) { rquad += deg; }
+	public void turn(float deg) { rotation += deg; }
 
 	// Draws the bottom plate.
 	public void drawPlate(GL gl) {
