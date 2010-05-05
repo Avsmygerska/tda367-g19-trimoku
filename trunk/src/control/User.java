@@ -12,5 +12,8 @@ public abstract class User {
 	public Player getPlayer() { return player; }
 	protected void setPlayer(Player p) { player = p; }
 	public abstract void doTurn(Board b);
+	public abstract String getNotice();
+	public abstract void disconnect();
+	
 
 }

@@ -43,12 +43,9 @@ public class AIUser extends User {
 			}
 		}
 		
-		System.out.print("AI here. I am putting a price at ");
-		
 		if(maxBallsInARowX >= maxBallsInARowY){
 			for(int y = 0; y < b.getY(); y++){
 				if(b.peek(startX,y,0) == null){
-					System.out.println(startX + "," + y);
 					b.place(startX, y, getPlayer());
 					return;
 				}
@@ -57,8 +54,7 @@ public class AIUser extends User {
 		}
 		else{
 			for(int x = 0; x < b.getX(); x++){
-				if(b.peek(x,startY,0) == null){
-					System.out.println(x + "," + startY);
+				if(b.peek(x,startY,0) == null){					
 					b.place(x, startY, getPlayer());
 					return;
 				}
@@ -70,10 +66,16 @@ public class AIUser extends User {
 			int x = (int) (b.getX() * Math.random());
 			int y = (int) (b.getY() * Math.random());
 			if(b.tryPlace(x, y)) {
-				System.out.println(x + "," + y);
 				b.place(x, y, getPlayer());
 				return;				
 			}
 		}
 	}
+
+	public String getNotice() {
+		return "Please wait. The AI is working.";
+	}
+	
+	public void disconnect() {}
+
 }

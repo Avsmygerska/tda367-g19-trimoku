@@ -31,11 +31,13 @@ public class Trimoku {
 		} catch (InterruptedException e) { e.printStackTrace();	}		
 		
 		final GameLogic gameLogic = new GameLogic(inst);
+		
+		// Default game.
 		ArrayList<User> players = new ArrayList<User>();		
 		players.add(new LocalUser(new Player("Player 1",Color.GREEN),inst.getControlPanel()));
-		players.add(new LocalUser(new Player("Player 2",Color.RED),inst.getControlPanel()));
-		
+		players.add(new LocalUser(new Player("Player 2",Color.RED),inst.getControlPanel()));		
 		gameLogic.configure(5, 5, 5, players);
+		
 		gameLogic.run();
 	}
 }
