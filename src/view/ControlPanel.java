@@ -70,6 +70,7 @@ public class ControlPanel extends JPanel implements Notifier{
 
 	public Point doTurn() {
 		
+		placePoint = new Point();		
 		latch = new CountDownLatch(1);
 		active(true);
 		
@@ -80,11 +81,9 @@ public class ControlPanel extends JPanel implements Notifier{
 			e.printStackTrace();
 		}
 
-		active(false);
-		
-		render.showPins(true);
-		
-		System.out.println("Done waiting.");
+		active(false);		
+		render.showPins(true);		
+
 		return placePoint;
 	}
 	
@@ -95,7 +94,6 @@ public class ControlPanel extends JPanel implements Notifier{
 	
 	public void updateModel(int x, int y) {
 		pinArea.constructButtons(x, y);
-		latch.countDown(); // Ugly, but I can't see how to do it otherwise.
 	}
 
 	private AbstractAction getPlaceAction() {
@@ -134,5 +132,9 @@ public class ControlPanel extends JPanel implements Notifier{
 		hideButton.setEnabled(true);
 		pinArea.active(true);		
 	}
-	
+
+	public void forceMove() {
+		placePoint = new Point(0,0);
+		latch.countDown();		
+	}	
 }

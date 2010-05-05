@@ -149,11 +149,12 @@ public class MainFrame extends JFrame implements UserInterface {
 	}
 
 	@Override
-	public void updateModel(Board board) {
+	public void newModel(Board board) {
 		DDD.getRender().setBoard(board);
 		controlPanel.updateModel(board.getX(), board.getY());
 		pack();
 	}
+	
 	
 	@Override
 	public Notifier getNotifier() {
@@ -167,7 +168,11 @@ public class MainFrame extends JFrame implements UserInterface {
 
 	@Override
 	public void postGame() {
-		controlPanel.activatePostGameControls();
-		
+		controlPanel.activatePostGameControls();		
+	}
+
+	@Override
+	public void updateModel() {
+		//TODO Don't update the renderer all the time, only when changes have occurred.		
 	}
 }

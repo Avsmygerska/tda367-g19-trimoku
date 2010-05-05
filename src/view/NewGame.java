@@ -167,6 +167,8 @@ public class NewGame extends javax.swing.JPanel {
 				// Default settings.
 				checkBoxBoardSize5x5.setSelected(true);
 				boardSize = 5;
+				hotSeatCheckBox.setSelected(true);
+				getHotSeatCheckBoxAction().actionPerformed(null);
 				aiPlayerTextField.setText("Player");
 				player1TextField.setText("Player1");
 				player2TextField.setText("Player2");
