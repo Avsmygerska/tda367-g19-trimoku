@@ -11,6 +11,6 @@ public interface UserInterface {
 	public void drawnGame();
 	public void updateModel(Board b);
 	public Notifier getNotifier();
-	public void activatePostGameControls();
+	public void postGame();
 
 }
