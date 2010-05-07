@@ -258,4 +258,8 @@ public class Board {
 	public void clear(){
 		brd = new Player[maxX][maxY][maxZ];
 	}
+	
+	/*public Point getLastMove(){
+		
+	}*/
 }
