@@ -1,5 +1,8 @@
 package view;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -13,7 +16,7 @@ public class Render implements GLEventListener {
 	private GLU glu;
 
 	// Board       Width     Depth    Thickness 
-	private float w = 3.0f, d = 3.0f, t = 0.2f;
+	private float w,d, t = 0.2f;
 
 	private float defaultRotation = 250.0f;
 	private float rotation = 250.0f;
@@ -25,8 +28,8 @@ public class Render implements GLEventListener {
 	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
 	private float pSize = 0.4f; // Radius of a piece.
 
-	private int pX, pY, pZ; // Number of positions in X, Y and Z
-	private float spacingX = 1.25f, spacingY = 1.25f;
+	private int rows, cols; // Number of positions in X, Y and Z
+	private float spacingRow = 1.25f, spacingCol = 1.25f;
 	
 	private boolean[][] pinVisible;
 	
@@ -41,20 +44,20 @@ public class Render implements GLEventListener {
 	
 	public void setBoard(Board board) {
 		this.board = board;
-		pX = board.getX();
-		pY = board.getY();
-		pZ = board.getZ();
+		rows = board.getRows();
+		cols = board.getColumns();
 		
-		pinVisible = new boolean[pX][pY];
+		pinVisible = new boolean[rows][cols];
 		showPins(true);
 		
-		w = edge + (spacingX * (pX-1))/2;
-		d = edge + (spacingY * (pY-1))/2;
+		w = edge + (spacingCol * (cols-1))/2;
+		d = edge + (spacingRow * (rows-1))/2;
 		
 		rotation = defaultRotation;
 	}
 
-	// Ta det försiktigt här, vårt Z-led är GL:s Y-led.
+	// Ta det försiktigt här.
+	// (columns,layers,row)
 	public void display(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -84,21 +87,22 @@ public class Render implements GLEventListener {
 		// Draw Pieces and Pins        
 		gl.glTranslatef(w-edge, t+pSize, d-edge);
 
-		for(int x = 0; x < pX; x++) {        	
-			for(int y = 0; y < pY; y++) {
-				if(pinVisible[x][y]) {
-					drawPin(gl);
+		for(int row = 0; row < rows; row++) {        	
+			for(int col = 0; col < cols; col++) {
+				if(pinVisible[row][col]) {
+					ArrayList<Player> pieces = board.getPin(row, col);
+					drawPin(gl, pieces.size(),new Color(150,150,0));
 					int z = 0;
-					for(Player p : board.getPin(x, y)) {
+					for(Player p : pieces) {
 						drawPiece(gl,p);
 						gl.glTranslatef(0f,2*pSize,0f);
 						z++;
 					}
 					gl.glTranslatef(0f, -2*pSize*z, 0f);
 				}
-				gl.glTranslatef(0f, 0f, -spacingY);
+				gl.glTranslatef(-spacingCol,0f, 0f);
 			}        	
-			gl.glTranslatef(-spacingX, 0f, spacingY*pY);
+			gl.glTranslatef(spacingCol*cols,0f,-spacingRow);
 		}
 
 		gl.glFlush();
@@ -107,7 +111,7 @@ public class Render implements GLEventListener {
 	public void turn(float deg) { rotation += deg; }
 
 	// Draws the bottom plate.
-	public void drawPlate(GL gl) {
+	private void drawPlate(GL gl) {
 		gl.glBegin(GL.GL_QUADS);
 
 		gl.glColor3f(0.5f, 0.5f, 0.5f);
@@ -139,52 +143,24 @@ public class Render implements GLEventListener {
 	}
 	
 	// Draws a single pin.
-	public void drawPin(GL gl) {
+	private void drawPin(GL gl, int length, Color c) {
 		gl.glTranslatef(0f, -pSize, 0f);
-		float angle = 90;    	
-		gl.glColor3f(0.3f, 0.3f, 0.0f);
+		float angle = 90;
+		gl.glColor3i(c.getRed(), c.getGreen(), c.getBlue());
 		gl.glRotatef(-angle,1f,0f,0f);
-		glu.gluCylinder(glu.gluNewQuadric(), 0.1, 0.1, 2*pSize*pZ+0.3, 10, 10);
+		glu.gluCylinder(glu.gluNewQuadric(), 0.1, 0.1, 2*pSize*length+0.3, 10, 10);
 		gl.glRotatef(angle,1f,0f,0f);
 		gl.glTranslatef(0f, +pSize, 0f);
 	}
 
 	// Draws a piece for the selected player.
-	public void drawPiece(GL gl, Player p) {
+	private void drawPiece(GL gl, Player p) {
 		
 		gl.glColor3f(p.getRed(), p.getGreen(), p.getBlue());		
 		glu.gluSphere(glu.gluNewQuadric(), pSize, 10, 10);
 	}
 
-	public void displayChanged(GLAutoDrawable gLDrawable, boolean modeChanged, boolean deviceChanged) {
-	}
-	
-	// Switches the visibility state for the selected pin.
-	public void switchPin(int x, int y) {
-		if( x < pX && y < pY)
-			pinVisible[x][y] = !pinVisible[x][y];			
-	}
-	
-	public void setRow(int no, boolean val) {
-		if(no < pX)
-			for(int y = 0; y < pY; y++)
-				pinVisible[no][y] = val;
-	}
-	
-	public void setCol(int no, boolean val) {
-		if(no < pY)
-			for(int x = 0; x < pX; x++)
-				pinVisible[x][no] = val;
-	}
-
-	// Shows or hides all pins.
-	public void showPins(boolean val) {
-		for (int x = 0; x < pX; x++) {
-			for (int y = 0; y < pY; y++) {
-				pinVisible[x][y] = val;				
-			}
-		}
-	}
+	public void displayChanged(GLAutoDrawable gLDrawable, boolean modeChanged, boolean deviceChanged) {}
 	
 	public void init(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
@@ -217,4 +193,61 @@ public class Render implements GLEventListener {
 		gl.glMatrixMode(GL.GL_MODELVIEW);        
 		gl.glLoadIdentity();
 	}
+	 
+	// Switches the visibility state for the selected pin.
+	public void switchPin(int row, int col) {
+		if( row < rows && col < cols)
+			pinVisible[row][col] = !pinVisible[row][col];
+	}
+	
+	public void setRow(int row, boolean val) {
+		if(row < rows)
+			for(int col = 0; col < cols; col++)
+				pinVisible[row][col] = val;
+	}
+	
+	public void setCol(int col, boolean val) {
+		if(col < cols)
+			for(int row = 0; row < rows; row++)
+				pinVisible[row][col] = val;
+	}
+
+	// Shows or hides all pins.
+	public void showPins(boolean val) {
+		for (int row = 0; row < rows; row++) {
+			for (int col = 0; col < cols; col++) {
+				pinVisible[row][col] = val;				
+			}
+		}
+	}	
+	
+	public boolean visiblePin(int row, int col) {
+		if (row < rows && col < cols)
+			return pinVisible[row][col];
+		return false;
+	}
+	
+	public boolean visibleRow(int row) {
+		if(row >= rows)
+			return false;
+		
+		// Are there any visible elements on the row?
+		for(int col = 0; col < cols; col++)
+			if(pinVisible[row][col])
+				return true;
+		
+		return false;
+	}
+	
+	public boolean visibleCol(int col) {
+		if(col >= cols)
+			return false;
+		
+		// Are there any visible elements in the column?
+		for(int row = 0; row < rows; row++)
+			if(pinVisible[row][col])
+				return true;
+		
+		return false;
+	}	
 }

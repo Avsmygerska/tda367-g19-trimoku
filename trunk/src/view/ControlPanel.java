@@ -82,7 +82,8 @@ public class ControlPanel extends JPanel implements Notifier{
 		}
 
 		active(false);		
-		render.showPins(true);		
+		render.showPins(true);
+		pinArea.showAllPins();
 
 		return placePoint;
 	}
@@ -104,7 +105,7 @@ public class ControlPanel extends JPanel implements Notifier{
 				public void actionPerformed(ActionEvent evt) {					
 					ArrayList<Point> pt = pinArea.getSelectedPins();
 					if(pt.size() == 1) {						
-						placePoint = pt.get(0);
+						placePoint = pt.get(0);						
 						latch.countDown();
 					}
 				}
@@ -119,8 +120,12 @@ public class ControlPanel extends JPanel implements Notifier{
 				private static final long serialVersionUID = 320879940932949134L;
 
 				public void actionPerformed(ActionEvent evt) {
-					for(Point p : pinArea.getSelectedPins())
+					for(Point p : pinArea.getSelectedPins()) {
 						render.switchPin(p.x, p.y);
+						
+						pinArea.updateRowHider(p.x, render.visibleRow(p.x));
+						pinArea.updateColHider(p.y, render.visibleCol(p.y));
+					}
 				}
 			};
 		}

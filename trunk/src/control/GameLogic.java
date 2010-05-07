@@ -27,7 +27,6 @@ public class GameLogic {
 	}
 
 	public void setUserInterface(UserInterface ui) {
-		System.out.println("Connecting Logic to UI.");
 		this.ui = ui;
 		ui.setGameLogic(this);
 	}
@@ -59,7 +58,6 @@ public class GameLogic {
 			
 			if(reset) {
 				// The game was reset for some reason, it's the first players turn
-				System.out.println("Reset!");
 				active = 0;
 				reset = false;
 			}

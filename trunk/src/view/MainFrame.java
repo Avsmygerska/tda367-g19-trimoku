@@ -123,7 +123,6 @@ public class MainFrame extends JFrame implements UserInterface {
 	
 	public void startNewGame(int gameMode, String player1, String player2, int xSize, int ySize, int zSize, Color player1Col, Color player2Col){
 		ArrayList<User> players = new ArrayList<User>();
-		System.out.println(player1Col +", " + player2Col);
 		players.add(new LocalUser(new Player(player1, player1Col), controlPanel));		
 		if(gameMode == 1)
 			players.add(new LocalUser(new Player(player2, player2Col), controlPanel));
@@ -162,7 +161,7 @@ public class MainFrame extends JFrame implements UserInterface {
 	@Override
 	public void newModel(Board board) {
 		DDD.getRender().setBoard(board);
-		controlPanel.updateModel(board.getX(), board.getY());
+		controlPanel.updateModel(board.getRows(), board.getColumns());
 		pack();
 	}
 	

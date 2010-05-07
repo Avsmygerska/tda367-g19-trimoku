@@ -27,22 +27,25 @@ import java.util.ArrayList;
 public class PinArea extends JPanel{
 
 	private static final long serialVersionUID = 9109603426210093692L;
-	private ArrayList<ArrayList<JCheckBox>> Boxes;
+	private JCheckBox[][] boxes;
+
+	ArrayList<Hider> rowHiders;
+	ArrayList<Hider> colHiders;
 
 	private JPanel bxs;
-	private JPanel xButtons;
-	private JPanel yButtons;
+	private JPanel rowButtons;
+	private JPanel colButtons;
 	private JPanel marker;
 	private Render render;
 
-	int maxX, maxY;
-	
+	int rows, cols;
+
 	public PinArea(Render render) {
 		this.render = render;
-		
+
 		bxs = new JPanel();
-		xButtons = new JPanel();
-		yButtons = new JPanel();
+		rowButtons = new JPanel();
+		colButtons = new JPanel();
 		marker = new MarkerPanel();
 
 		// Layout stuff
@@ -56,30 +59,28 @@ public class PinArea extends JPanel{
 		add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
-		yButtons.setLayout(yButtonsLayout);
-		add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
+		BoxLayout yButtonsLayout = new BoxLayout(colButtons, javax.swing.BoxLayout.X_AXIS);
+		colButtons.setLayout(yButtonsLayout);
+		add(colButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));		
 
-		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
-		xButtons.setLayout(xPanelLayout);
-		add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
+		BoxLayout xPanelLayout = new BoxLayout(rowButtons, javax.swing.BoxLayout.Y_AXIS);
+		rowButtons.setLayout(xPanelLayout);
+		add(rowButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		
-		
-		
+
+
+
 	}
-	public PinArea(int x, int y, Render render) {
+	public PinArea(int rows, int cols, Render render) {
 		this.render = render;
-		maxX = x;
-		maxY = y;
 
 		bxs = new JPanel();
-		xButtons = new JPanel();
-		yButtons = new JPanel();
+		rowButtons = new JPanel();
+		colButtons = new JPanel();
 		marker = new MarkerPanel();
 
 		// Layout stuff
@@ -93,91 +94,114 @@ public class PinArea extends JPanel{
 		add(marker, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		BoxLayout yButtonsLayout = new BoxLayout(yButtons, javax.swing.BoxLayout.X_AXIS);
-		yButtons.setLayout(yButtonsLayout);
-		add(yButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
+		BoxLayout yButtonsLayout = new BoxLayout(colButtons, javax.swing.BoxLayout.X_AXIS);
+		colButtons.setLayout(yButtonsLayout);
+		add(colButtons, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));		
 
-		BoxLayout xPanelLayout = new BoxLayout(xButtons, javax.swing.BoxLayout.Y_AXIS);
-		xButtons.setLayout(xPanelLayout);
-		add(xButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
+		BoxLayout xPanelLayout = new BoxLayout(rowButtons, javax.swing.BoxLayout.Y_AXIS);
+		rowButtons.setLayout(xPanelLayout);
+		add(rowButtons, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		GridLayout bxsLayout = new GridLayout(x, y);
+		GridLayout bxsLayout = new GridLayout(rows, cols);
 		bxs.setLayout(bxsLayout);
 		add(bxs, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, 
 				GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		
-		constructButtons(x,y);
+
+		constructButtons(rows,cols);
 	}
 
-	public void constructButtons(int x, int y) {
-		xButtons.removeAll();
-		yButtons.removeAll();
+	public void constructButtons(int rows, int cols) {
+		rowButtons.removeAll();
+		colButtons.removeAll();
 		bxs.removeAll();
-		GridLayout bxsLayout = new GridLayout(x, y);
+		GridLayout bxsLayout = new GridLayout(rows, cols);
 		bxs.setLayout(bxsLayout);
-				
-		maxX = x;
-		maxY = y;
-		
-		
+
+		this.rows = rows;
+		this.cols = cols;
+
+
 		// Add the check boxes to the panel and the storing data structure
-		Boxes = new ArrayList<ArrayList<JCheckBox>>();
+		boxes = new JCheckBox[rows][cols];//new ArrayList<ArrayList<JCheckBox>>();
 		JCheckBox t;
-		ArrayList<JCheckBox> tmp;
-		for(int i = 0; i < maxX; i++) {			
-			tmp = new ArrayList<JCheckBox>(); 
-			for(int j = 0; j < maxY; j++) {
+
+		for(int row = 0; row < rows; row++) {
+			for(int col = 0; col < cols; col++) {
 				t = new JCheckBox();
+				boxes[row][col] = t;
 				bxs.add(t);
-				tmp.add(t);				
-			}
-			Boxes.add(tmp);
+			}			
 		}
 
 		// Add hider buttons for each row and column.
 
 		JButton btn;
-		for(int i = 0; i < maxX; i++) {
+		rowHiders = new ArrayList<Hider>();
+		colHiders = new ArrayList<Hider>();
+		Hider h;		
+
+		// Row-hiding buttons.
+		for(int i = 0; i < rows; i++) {			
 			btn = new JButton();			
 			btn.setMargin(new Insets(1,1,1,1));
-			btn.addActionListener(new Hider(btn,false,i));			
-			xButtons.add(btn);	
+			h = new Hider(btn,false,i);
+			rowHiders.add(h);
+			btn.addActionListener(h);			
+			rowButtons.add(btn);	
 		}
 
-		for(int i = 0; i < maxY; i++) {
+		// Column-hiding buttons
+		for(int i = 0; i < cols; i++) {
 			btn = new JButton();
 			btn.setMargin(new Insets(1,1,1,1));
-			btn.addActionListener(new Hider(btn,true,i));
-			yButtons.add(btn);
-		}
-		
+			h = new Hider(btn,true,i);
+			colHiders.add(h);
+			btn.addActionListener(h);
+			colButtons.add(btn);
+		}		
+
 	}
 
-	public JCheckBox getPin(int i, int j){
-		return Boxes.get(i).get(j);
+	public JCheckBox getPin(int row, int col){
+		if(row >= rows || col >= cols)
+			return null;
+		return boxes[row][col];
 	}
 
 	public ArrayList<Point> getSelectedPins () {
 		ArrayList<Point> pts = new ArrayList<Point>();
 
-		for(int i = 0; i < maxX; i++)
-			for(int j = 0; j < maxY; j++)
-				if(getPin(i,j).isSelected()) {
-					pts.add(new Point(j,i)); // Reversed order, since that's how the layout works.
-					getPin(i,j).setSelected(false);
+		for(int row = 0; row < rows; row++)
+			for(int col = 0; col < cols; col++)
+				if(getPin(row,col).isSelected()) {
+					pts.add(new Point(row,col));					
+					getPin(row,col).setSelected(false);
 				}
 
+		for (Point p : pts)
+			System.out.println("Selected : " + p.x + "," + p.y);
 		return pts;
+	}
+
+	public void showAllPins() {
+
+		for(Hider c : rowHiders) {
+			c.hide(true);
+		}
+
+		for(Hider c : colHiders) {
+			c.hide(true);
+		}
 	}
 
 
 	public void active(boolean val) {
-		for (Component c : xButtons.getComponents())
+		for (Component c : rowButtons.getComponents())
 			c.setEnabled(val);
 
-		for (Component c : yButtons.getComponents())
+		for (Component c : colButtons.getComponents())
 			c.setEnabled(val);
 
 		for (Component c : bxs.getComponents())
@@ -213,16 +237,27 @@ public class PinArea extends JPanel{
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent arg0) {			
-			if(val = !val)
-				setText("Hide");
-			else 
-				setText("Show");			
+		public void actionPerformed(ActionEvent arg0) {	
+			hide(!val);			
 
-			if(vertical)
+			if(vertical) {
+				render.setCol(number, val);
+				for(int i = 0; i < rows;i++)
+					updateRowHider(i, render.visibleRow(i));
+			} else {
 				render.setRow(number, val);
+				for(int i = 0; i < cols;i++)
+					updateColHider(i, render.visibleCol(i));				
+			}
+		}
+
+		public void hide(boolean value){
+			val = value;
+
+			if(val)
+				setText("Hide");
 			else
-				render.setCol(number, val);		
+				setText("Show");				
 		}
 
 		private void setText(String t) {
@@ -253,5 +288,13 @@ public class PinArea extends JPanel{
 			}
 
 		}
+	}
+
+	public void updateColHider(int no, boolean vis){		
+		colHiders.get(no).hide(vis);		
+	}
+
+	public void updateRowHider(int no, boolean vis){
+		rowHiders.get(no).hide(vis);
 	}
 }
