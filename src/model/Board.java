@@ -6,59 +6,60 @@ public class Board {
 	
 	Player[][][] brd;
 	
-	private int maxX, maxY, maxZ;
+	private int rows, cols, lays;
 	
 	
-	public Board(int x, int y, int z) {
-		maxX = x;
-		maxY = y;
-		maxZ = z;
+	public Board(int r, int c, int l) {
+		rows = r;
+		cols = c;
+		lays = l;
 		
-		brd = new Player[maxX][maxY][maxZ];
+		brd = new Player[rows][cols][lays];
 	}
 	
 	// Could return a null pointer, if there is no peice at the specified place.
-	public Player peek(int x, int y, int z) {
-		if(!(x < maxX && y < maxY && z < maxZ))
+	public Player peek(int r, int c, int l) {
+		if(!(r < rows && c < cols && l < lays))
 			return null;
-		return brd[x][y][z];		
+		return brd[r][c][l];		
 	}
 		
-	public ArrayList<Player> getPin(int x, int y) {
+	public ArrayList<Player> getPin(int row, int col) {
 		ArrayList<Player> pin = new ArrayList<Player>();
 		
-		for (int z = 0; z < maxZ; z++) {
-			if(brd[x][y][z] == null)
+		for (int lay = 0; lay < lays; lay++) {
+			if(brd[row][col][lay] == null)
 				break;
-			pin.add(brd[x][y][z]);			
+			pin.add(brd[row][col][lay]);			
 		}		
 		return pin;		
 	}
 	
-	public int getX() { return maxX; }
-	public int getY() { return maxY; }
-	public int getZ() { return maxZ; }	
+	public int getRows() { return rows; }
+	public int getColumns() { return cols; }
+	public int getLayers() { return lays; }	
 	
-	public boolean tryPlace(int x, int y) {
-		if (x >= maxX || y >= maxY)
+	public boolean tryPlace(int row, int col) {
+		if (row >= rows || col >= cols)
 			return false;
 		
-		for(int i = 0; i < maxZ;i++){
-			if(brd[x][y][i] == null){				
+		for(int l = 0; l < lays;l++){
+			if(brd[row][col][l] == null){				
 				return true;
 			}		
 		}
 		return false;
 	}
 	
-	public boolean place(int x, int y, Player p) {
+	public boolean place(int row, int col, Player p) {
 		
-		if (x >= maxX || y >= maxY)
+		if (row >= rows || col >= cols)
 			return false;
 		
-		for(int i = 0; i < maxZ;i++){
-			if(brd[x][y][i] == null){
-				brd[x][y][i] = p;
+		for(int i = 0; i < lays;i++){
+			if(brd[row][col][i] == null){
+				brd[row][col][i] = p;
+				System.out.println(p.getName() + " put a piece at : " + row + "," + col);
 				return true;
 			}		
 		}
@@ -66,9 +67,9 @@ public class Board {
 	}
 	
 	public boolean isFull() {
-		for(int x = 0; x < maxX;x++)
-			for(int y = 0; y < maxY;y++)
-				for(int z = 0; z < maxZ;z++)
+		for(int x = 0; x < rows;x++)
+			for(int y = 0; y < cols;y++)
+				for(int z = 0; z < lays;z++)
 					if(brd[x][y][z] == null)
 						return false;
 		return true;
@@ -94,31 +95,31 @@ public class Board {
 	
 	private boolean checkX(Player p){
 		// Check if a player have 5 in a row in the X-dimension
-		for(int y = 0; y < maxY; y++){			
-			for(int z = 0; z < maxZ; z++) {
+		for(int y = 0; y < cols; y++){			
+			for(int z = 0; z < lays; z++) {
 				int cal = 0;
-				for(int x = 0; x < maxY; x++) {
+				for(int x = 0; x < cols; x++) {
 					
 					if (brd[x][y][z] == null || !brd[x][y][z].equals(p) ){
 						break;
 					}
 					cal++;
 				}
-				if (cal == maxZ){
+				if (cal == lays){
 					return true;
 				}
 			}			
 		}
 		// Check if a player have won on a diagonal in the X-dimension
-		for(int x = 0; x < maxX; x++){
+		for(int x = 0; x < rows; x++){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
-			while((winDiagonalDown || winDiagonalUp) && i < maxX){
+			while((winDiagonalDown || winDiagonalUp) && i < rows){
 				if( brd[x][i][i] == null || !brd[x][i][i].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[x][i][maxX-1-i] == null || !brd[x][i][maxX-1-i].equals(p)){
+				if( brd[x][i][rows-1-i] == null || !brd[x][i][rows-1-i].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
@@ -134,31 +135,31 @@ public class Board {
 	private boolean checkY(Player p){
 		
 		// Check if a player have 5 in a row in the Y-dimension
-		for(int x = 0; x < maxX; x++){			
-			for(int z = 0; z < maxZ; z++) {
+		for(int x = 0; x < rows; x++){			
+			for(int z = 0; z < lays; z++) {
 				int cal = 0;
-				for(int y = 0; y < maxY; y++) {
+				for(int y = 0; y < cols; y++) {
 					if (brd[x][y][z] == null || !brd[x][y][z].equals(p)){
 						break;
 					}
 					cal++;
 				}
-				if (cal == maxZ){
+				if (cal == lays){
 					return true;
 				}
 			}			
 		}
 		
 		// Check if a player have won on a diagonal in the y-dimension
-		for(int y = 0; y < maxY; y++){
+		for(int y = 0; y < cols; y++){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
-			while((winDiagonalDown || winDiagonalUp) && i < maxY){
+			while((winDiagonalDown || winDiagonalUp) && i < cols){
 				if( brd[i][y][i] == null || !brd[i][y][i].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[i][y][maxY-1-i] == null || !brd[i][y][maxY-1-i].equals(p)){
+				if( brd[i][y][cols-1-i] == null || !brd[i][y][cols-1-i].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
@@ -174,30 +175,30 @@ public class Board {
 	private boolean checkZ(Player p){
 		
 		// Check if a player have 5 in a row in the Z-dimension
-		for(int x = 0; x < maxX; x++){
-			for(int y = 0; y < maxY; y++) {
+		for(int x = 0; x < rows; x++){
+			for(int y = 0; y < cols; y++) {
 				int cal = 0;
-				for(int z = 0; z < maxZ; z++) {
+				for(int z = 0; z < lays; z++) {
 					if (brd[x][y][z] == null || !brd[x][y][z].equals(p)){
 						break;
 					}
 					cal++;
 				}
-				if (cal == maxZ){
+				if (cal == lays){
 					return true;
 				}
 			}			
 		}
 		// Check if a player have won on a diagonal in the z-dimension
-		for(int z = 0; z < maxZ; z++){
+		for(int z = 0; z < lays; z++){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
-			while((winDiagonalDown || winDiagonalUp) && i < maxZ){
+			while((winDiagonalDown || winDiagonalUp) && i < lays){
 				if( brd[i][i][z] == null || !brd[i][i][z].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[maxZ-1-i][i][z] == null || !brd[maxZ-1-i][i][z].equals(p)){
+				if( brd[lays-1-i][i][z] == null || !brd[lays-1-i][i][z].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
@@ -219,11 +220,11 @@ public class Board {
 		boolean winDiagonalDown = true;
 		boolean winDiagonalUp   = true;
 		int i = 0;
-		while((winDiagonalDown || winDiagonalUp) && i < maxX){
+		while((winDiagonalDown || winDiagonalUp) && i < rows){
 			if( brd[i][i][i] == null || !brd[i][i][i].equals(p)){
 				winDiagonalUp = false;
 			}
-			if( brd[i][i][maxX-1-i] == null || !brd[i][i][maxX-1-i].equals(p)){
+			if( brd[i][i][rows-1-i] == null || !brd[i][i][rows-1-i].equals(p)){
 				winDiagonalDown = false;
 			}
 			i++;
@@ -239,11 +240,11 @@ public class Board {
 		winDiagonalDown = true;
 		winDiagonalUp   = true;
 		i = 0;
-		while((winDiagonalDown || winDiagonalUp) && i < maxX){
-			if( brd[maxX-1-i][i][i] == null || !brd[maxX-1-i][i][i].equals(p)){
+		while((winDiagonalDown || winDiagonalUp) && i < rows){
+			if( brd[rows-1-i][i][i] == null || !brd[rows-1-i][i][i].equals(p)){
 				winDiagonalUp = false;
 			}
-			if( brd[maxX-1-i][i][maxX-1-i] == null || !brd[maxX-1-i][i][maxX-1-i].equals(p)){
+			if( brd[rows-1-i][i][rows-1-i] == null || !brd[rows-1-i][i][rows-1-i].equals(p)){
 				winDiagonalDown = false;
 			}
 			i++;
@@ -256,7 +257,7 @@ public class Board {
 	}
 		
 	public void clear(){
-		brd = new Player[maxX][maxY][maxZ];
+		brd = new Player[rows][cols][lays];
 	}
 	
 	/*public Point getLastMove(){

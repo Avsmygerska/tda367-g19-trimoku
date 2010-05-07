@@ -23,13 +23,13 @@ public class AIUser extends User {
 		AI = getPlayer();
 		hasPlaced = false;
 		if(count == 0){
-			possibleWinZ = new boolean [b.getX()][b.getY()];
-			possibleWinX = new boolean [b.getX()][b.getY()][b.getZ()];
-			possibleWinY = new boolean [b.getX()][b.getY()][b.getZ()];
-			for(int i = 0; i<b.getX(); i++){
-				for(int j = 0; j<b.getY(); j++){
+			possibleWinZ = new boolean [b.getRows()][b.getColumns()];
+			possibleWinX = new boolean [b.getRows()][b.getColumns()][b.getLayers()];
+			possibleWinY = new boolean [b.getRows()][b.getColumns()][b.getLayers()];
+			for(int i = 0; i<b.getRows(); i++){
+				for(int j = 0; j<b.getColumns(); j++){
 					possibleWinZ[i][j] = true;
-						for(int k = 0; k < b.getZ(); k++){
+						for(int k = 0; k < b.getLayers(); k++){
 							possibleWinX[i][j][k] = true;
 							possibleWinY[i][j][k] = true;
 						}
@@ -46,10 +46,10 @@ public class AIUser extends User {
 		int defensiveCurrentY = 0;
 		int defensiveMaxBallsInARowX = 0;
 		int defensiveCurrentZinXDirection = 0;
-		for(int x = 0; x < b.getX(); x++){
-			for(int z = 0; z < b.getZ(); z++){
+		for(int x = 0; x < b.getRows(); x++){
+			for(int z = 0; z < b.getLayers(); z++){
 				int allYourBaseAreBelongToUs = 0;
-				for(int y = 0; y < b.getY(); y++){
+				for(int y = 0; y < b.getColumns(); y++){
 					defensiveCurrentY = y;
 					if(b.peek(x,y,z) != null && !b.peek(x,y,z).equals(getPlayer())){
 						allYourBaseAreBelongToUs++;
@@ -67,10 +67,10 @@ public class AIUser extends User {
 		int defensiveMaxBallsInARowY = 0;
 		int defensiveCurrentX = 0;
 		int defensiveCurrentZinYDirection = 0;
-		for(int y = 0; y < b.getY(); y++){
-			for(int z = 0; z < b.getZ(); z++){
+		for(int y = 0; y < b.getColumns(); y++){
+			for(int z = 0; z < b.getLayers(); z++){
 				int allYourBaseAreBelongToUs = 0;
-				for(int x = 0; x < b.getX(); x++){
+				for(int x = 0; x < b.getRows(); x++){
 					defensiveCurrentX = x;
 					if(b.peek(x,y,z) != null && !b.peek(x,y,z).equals(getPlayer())){
 						allYourBaseAreBelongToUs++;
@@ -91,11 +91,11 @@ public class AIUser extends User {
 		int defensiveStartYinZDirection = 0;
 		int defensiveStartXinZDirection = 0;
 		
-		for(int x = 0; x<b.getX(); x++){
+		for(int x = 0; x<b.getRows(); x++){
 			int maxZ;
-			for(int y = 0; y<b.getY(); y++){
+			for(int y = 0; y<b.getColumns(); y++){
 				maxZ = 0;
-				for(int z = 0; z<b.getZ(); z++){
+				for(int z = 0; z<b.getLayers(); z++){
 					if(b.peek(x, y, z)!= null && !b.peek(x, y, z).equals(getPlayer())){
 						maxZ++;
 					}
@@ -117,10 +117,10 @@ public class AIUser extends User {
 		int offensiveCurrentY = 0;
 		int offensiveMaxBallsInARowX = 0;
 		int offensiveCurrentZinXDirection = 0;
-		for(int x = 0; x < b.getX(); x++){
-			for(int z = 0; z < b.getZ(); z++){
+		for(int x = 0; x < b.getRows(); x++){
+			for(int z = 0; z < b.getLayers(); z++){
 				int allYourBaseAreBelongToUs = 0;
-				for(int y = 0; y < b.getY(); y++){
+				for(int y = 0; y < b.getColumns(); y++){
 					offensiveCurrentY = y;
 					if(b.peek(x,y,z) != null && !b.peek(x,y,z).equals(getPlayer())){
 						allYourBaseAreBelongToUs++;
@@ -138,10 +138,10 @@ public class AIUser extends User {
 		int offensiveMaxBallsInARowY = 0;
 		int offensiveCurrentX = 0;
 		int offensiveCurrentZinYDirection = 0;
-		for(int y = 0; y < b.getY(); y++){
-			for(int z = 0; z < b.getZ(); z++){
+		for(int y = 0; y < b.getColumns(); y++){
+			for(int z = 0; z < b.getLayers(); z++){
 				int allYourBaseAreBelongToUs = 0;
-				for(int x = 0; x < b.getX(); x++){
+				for(int x = 0; x < b.getRows(); x++){
 					offensiveCurrentX = x;
 					if(b.peek(x,y,z) != null && !b.peek(x,y,z).equals(getPlayer())){
 						allYourBaseAreBelongToUs++;
@@ -162,11 +162,11 @@ public class AIUser extends User {
 		int offensiveStartYinZDirection = 0;
 		int offensiveStartXinZDirection = 0;
 		
-		for(int x = 0; x<b.getX(); x++){
+		for(int x = 0; x<b.getRows(); x++){
 			int maxZ;
-			for(int y = 0; y<b.getY(); y++){
+			for(int y = 0; y<b.getColumns(); y++){
 				maxZ = 0;
-				for(int z = 0; z<b.getZ(); z++){
+				for(int z = 0; z<b.getLayers(); z++){
 					if(b.peek(x, y, z)!= null && !b.peek(x, y, z).equals(getPlayer())){
 						maxZ++;
 					}
@@ -184,11 +184,11 @@ public class AIUser extends User {
 					Where the AI should put the balls, defensive calculations
 		// =========================================================================== */
 		
-		if(defensiveMaxBallsInARowX > (b.getX()-3) || offensiveMaxBallsInARowY > (b.getY()-3) || offensiveMaxBallsInaRowZ > (b.getX()-2)){	
+		if(defensiveMaxBallsInARowX > (b.getRows()-3) || offensiveMaxBallsInARowY > (b.getColumns()-3) || offensiveMaxBallsInaRowZ > (b.getRows()-2)){	
 			if(defensiveMaxBallsInARowX >= offensiveMaxBallsInARowY){
 				if(defensiveMaxBallsInARowX >= offensiveMaxBallsInaRowZ){
 					System.out.println("printar i x");
-					for(int y = 0; y < b.getY(); y++){
+					for(int y = 0; y < b.getColumns(); y++){
 						if(b.peek(defensiveStartXinXDirection,y,defensiveCurrentZinXDirection) == null){
 							b.place(defensiveStartXinXDirection, y, getPlayer());
 							hasPlaced = true;
@@ -198,7 +198,7 @@ public class AIUser extends User {
 					}
 					
 					if(hasPlaced){
-						for(int y = 0; y<b.getY();y++){
+						for(int y = 0; y<b.getColumns();y++){
 							possibleWinX[defensiveStartXinXDirection][y][defensiveCurrentZinXDirection]= false;
 							possibleWinY[y][defensiveStartXinXDirection][defensiveCurrentZinXDirection] = false;
 						}
@@ -217,7 +217,7 @@ public class AIUser extends User {
 			else{
 				if(offensiveMaxBallsInARowY >= offensiveMaxBallsInaRowZ){
 					System.out.println("printar i y, " + offensiveMaxBallsInARowY);
-					for(int x = 0; x < b.getX(); x++){
+					for(int x = 0; x < b.getRows(); x++){
 						if(b.peek(x,offensiveStartYinYDirection,offensiveCurrentZinYDirection) == null){					
 							b.place(x, offensiveStartYinYDirection, getPlayer());
 							hasPlaced = true;
@@ -225,7 +225,7 @@ public class AIUser extends User {
 						}
 					}
 					if(hasPlaced){
-						for (int x = 0; x < b.getX(); x++) {
+						for (int x = 0; x < b.getRows(); x++) {
 							possibleWinY[x][offensiveStartYinYDirection][offensiveCurrentZinYDirection]= false;
 							possibleWinX[offensiveStartYinYDirection][x][offensiveCurrentZinYDirection] = false;
 						}
@@ -252,8 +252,8 @@ public class AIUser extends User {
 		
 		while(true){
 			System.out.println("AI goes Random!");
-			int x = (int) (b.getX() * Math.random());
-			int y = (int) (b.getY() * Math.random());
+			int x = (int) (b.getRows() * Math.random());
+			int y = (int) (b.getColumns() * Math.random());
 			if(b.tryPlace(x, y)) {
 				b.place(x, y, getPlayer());
 				return;				

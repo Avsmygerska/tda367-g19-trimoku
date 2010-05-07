@@ -264,7 +264,6 @@ public class NewGame extends javax.swing.JPanel {
 			jComboBox1.setModel(jComboBox1Model);
 			jComboBox1.setSelectedIndex(0);
 			jComboBox1.setAction(getPlayer1Color());
-			System.out.println("Efter Jcombobox1 init");
 		}
 		return jComboBox1;
 	}
@@ -278,7 +277,6 @@ public class NewGame extends javax.swing.JPanel {
 			jComboBox2.setModel(jComboBox2Model);
 			jComboBox2.setSelectedIndex(1);
 			jComboBox2.setAction(getPlayer2Color());
-			System.out.println("Efter Jcombobox2 init");
 		}
 		return jComboBox2;
 	}
@@ -389,26 +387,7 @@ public class NewGame extends javax.swing.JPanel {
 				
 		return getCancelButtonAction;
 	}
-	
-	/*
-	private AbstractAction getCheckBoxBoardSizeAction(){
-		if(getCheckBoxBoardSizeAction == null) {
-			getCheckBoxBoardSizeAction = new AbstractAction("", null) {
-				private static final long serialVersionUID = -4532880389414923636L;
-
-				public void actionPerformed(ActionEvent evt){
-					if(evt.getSource().equals(checkBoxBoardSize5x5)){
-						System.out.println("tjoho");
-					}
-					System.out.println("faan");
-				}
-			};
-		}
-				
-		return getCheckBoxBoardSizeAction;
-	}
-	*/
-	
+		
 	private AbstractAction getBoardSizeAction() {
 		if(getBoardSizeAction == null) {
 			getBoardSizeAction = new AbstractAction("", null) {
@@ -460,7 +439,6 @@ public class NewGame extends javax.swing.JPanel {
 						jComboBox1Index = 3;
 						player1 = Color.orange;
 					}
-					System.out.println("Player1: "+player1);
 				}	
 			};
 		}
@@ -492,7 +470,6 @@ public class NewGame extends javax.swing.JPanel {
 						jComboBox2Index = 3;
 						player2 = Color.orange;
 					}
-					System.out.println("Player2: "+ player2);
 				}
 				
 			};
@@ -519,7 +496,6 @@ public class NewGame extends javax.swing.JPanel {
 					if(jComboBox3.getSelectedItem().equals("Orange")){
 						aiPlayer = Color.orange;
 					}
-					System.out.println("AIPlayer: "+ aiPlayer);
 				}
 				
 			};
