@@ -62,7 +62,6 @@ public class Board {
 		for(int i = 0; i < lays;i++){
 			if(brd[row][col][i] == null){
 				brd[row][col][i] = p;
-				System.out.println(p.getName() + " put a piece at : " + row + "," + col);
 				lastMove.x = row;
 				lastMove.y = col;
 				return true;

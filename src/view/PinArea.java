@@ -179,9 +179,6 @@ public class PinArea extends JPanel{
 					pts.add(new Point(row,col));					
 					getPin(row,col).setSelected(false);
 				}
-
-		for (Point p : pts)
-			System.out.println("Selected : " + p.x + "," + p.y);
 		return pts;
 	}
 
