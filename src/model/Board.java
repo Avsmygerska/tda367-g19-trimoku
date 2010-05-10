@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 
 public class Board {
@@ -7,6 +8,7 @@ public class Board {
 	Player[][][] brd;
 	
 	private int rows, cols, lays;
+	private Point lastMove;
 	
 	
 	public Board(int r, int c, int l) {
@@ -14,6 +16,7 @@ public class Board {
 		cols = c;
 		lays = l;
 		
+		lastMove = new Point();
 		brd = new Player[rows][cols][lays];
 	}
 	
@@ -60,6 +63,8 @@ public class Board {
 			if(brd[row][col][i] == null){
 				brd[row][col][i] = p;
 				System.out.println(p.getName() + " put a piece at : " + row + "," + col);
+				lastMove.x = row;
+				lastMove.y = col;
 				return true;
 			}		
 		}
@@ -260,7 +265,7 @@ public class Board {
 		brd = new Player[rows][cols][lays];
 	}
 	
-	/*public Point getLastMove(){
-		
-	}*/
+	public Point getLastMove(){
+		return lastMove;
+	}
 }
