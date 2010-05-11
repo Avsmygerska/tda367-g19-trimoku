@@ -82,7 +82,7 @@ public class WinPanel extends JPanel{
 				private static final long serialVersionUID = -132098728087120287L;
 
 				public void actionPerformed(ActionEvent evt){
-					System.exit(0);
+					mf.quit();
 				}	
 			};
 		}

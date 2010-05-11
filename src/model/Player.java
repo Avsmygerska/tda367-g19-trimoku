@@ -42,10 +42,17 @@ public class Player {
 	}
 	
 	public boolean equals(Object o) {
-		if(o.getClass().equals(model.Player.class)) {
+		if(o == null)
+			return false;
+		if(o.getClass().equals(this.getClass())) {
 			Player p = (Player) o;
 			return p.getName().equals(name) && p.getColor().equals(color);
 		}
 		return false;
+	}
+	
+	public int hashCode() {
+		assert false;
+		return 4343;
 	}
 }

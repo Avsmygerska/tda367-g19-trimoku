@@ -11,8 +11,7 @@ import control.*;
 
 
 public class Trimoku {
-	static MainFrame inst;
-
+	static MainFrame inst = null;
 	public static void main(String[] args) {
 		
 		final CountDownLatch cl = new CountDownLatch(1);
@@ -20,7 +19,7 @@ public class Trimoku {
 		SwingUtilities.invokeLater(
 				new Runnable() {
 					public void run() {
-						inst = new MainFrame();
+						inst = MainFrame.getInstance();
 						inst.setLocationRelativeTo(null);
 						inst.setVisible(true);
 						cl.countDown();
