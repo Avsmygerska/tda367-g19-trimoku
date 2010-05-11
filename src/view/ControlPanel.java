@@ -12,6 +12,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import view.interfaces.*;
+
 public class ControlPanel extends JPanel implements Notifier{
 
 	private static final long serialVersionUID = -8040537962044433652L;

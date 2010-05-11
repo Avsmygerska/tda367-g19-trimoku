@@ -1,8 +1,8 @@
-package view;
+package view.interfaces;
 
 import model.Board;
 import control.GameLogic;
-import control.User;
+import control.interfaces.User;
 
 public interface UserInterface {
 	

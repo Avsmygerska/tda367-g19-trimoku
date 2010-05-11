@@ -1,7 +1,7 @@
 package control;
 
 import java.awt.Point;
-
+import control.interfaces.*;
 import model.*;
 import view.*;
 

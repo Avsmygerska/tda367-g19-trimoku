@@ -1,7 +1,8 @@
 package control;
 
 import java.util.ArrayList;
-import view.UserInterface;
+import view.interfaces.*;
+import control.interfaces.*;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -69,7 +70,8 @@ public class GameLogic {
 				ready = new CountDownLatch(1);
 				ui.getNotifier().notifyTurn((u.getPlayer().getName() + " has won."));
 				ui.postGame();
-				ui.wonGame(u);				
+				ui.wonGame(u);
+				
 			} else if(board.isFull()) {
 				// Drawn game.
 				ready = new CountDownLatch(1);
