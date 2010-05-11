@@ -16,7 +16,6 @@ public class AIUser extends User {
 	private boolean [][][] offensivePossibleWinY;
 	private boolean hasPlaced;
 	private int count = 0;
-	private Player AI;
 	private Point lastMove;
 
 	public AIUser(Player p) {
@@ -25,7 +24,6 @@ public class AIUser extends User {
 	}
 
 	public void doTurn(Board b) {
-		AI = getPlayer();
 		hasPlaced = false;
 		if(count == 0){
 			defensivePossibleWinZ = new boolean [b.getRows()][b.getColumns()];
@@ -422,8 +420,10 @@ public class AIUser extends User {
 
 		while(true){
 			System.out.println("AI goes Random!");
-			int x = (int) (b.getRows() * Math.random());
-			int y = (int) (b.getColumns() * Math.random());
+			java.util.Random r = new java.util.Random();
+			
+			int x = r.nextInt(b.getRows());
+			int y = r.nextInt(b.getColumns());
 			if(b.tryPlace(x, y)) {
 				b.place(x, y, getPlayer());
 				return;				
