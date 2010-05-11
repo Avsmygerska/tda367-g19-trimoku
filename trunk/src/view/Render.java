@@ -26,7 +26,7 @@ public class Render implements GLEventListener {
 	// Board       Width     Depth    Thickness 
 	private float w,d,t = 0.2f;
 
-	private float defaultRotation = 200;//250.0f;
+	private float defaultRotation = 0;//200f;
 	private float rotation;
 
 	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
@@ -118,7 +118,8 @@ public class Render implements GLEventListener {
 	}
 
 	public void turn(float deg) { 
-		rotation += deg;
+		rotation = (rotation + deg) % 360;
+		System.out.println(rotation);
 	}
 	
 	public void order () {

@@ -31,15 +31,18 @@ public class MainFrame extends JFrame implements UserInterface {
 
 	private JMenuBar MenuBar;
 	private JMenu jMenu1;
-	
-	String game;
 		
-	private MainFrame hejochhopp = this;
+	private static MainFrame mainFrame = null;
+	private GameLogic gameLogic;
 	
-	// Testing stuff
-	GameLogic gameLogic;	
+	public static MainFrame getInstance() {
+		if(mainFrame == null)
+			mainFrame = new MainFrame();
+		
+		return mainFrame;
+	}
 	
-	public MainFrame() {
+	private MainFrame() {
 		super();
 		initGUI();
 	}
@@ -82,8 +85,7 @@ public class MainFrame extends JFrame implements UserInterface {
 				private static final long serialVersionUID = 891261472154540862L;
 
 				public void actionPerformed(ActionEvent evt) {
-					DDD.stop();
-					System.exit(0);
+					quit();
 				}
 			};
 		}
@@ -108,9 +110,14 @@ public class MainFrame extends JFrame implements UserInterface {
 		return controlPanel;
 	}
 	
-	public void newGame(){
+	public void quit() {
+		DDD.stop();
+		System.exit(0);
+	}
+	
+	public void newGame() {
 		JFrame frame = new JFrame();
-		NewGame newgame = new NewGame(hejochhopp, frame);
+		NewGame newgame = new NewGame(mainFrame, frame);
 		frame.setPreferredSize(new Dimension(500,400));
 		frame.setLocation(550, 280);
 		frame.setTitle("New Game");

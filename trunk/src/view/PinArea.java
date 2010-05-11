@@ -205,7 +205,7 @@ public class PinArea extends JPanel{
 			c.setEnabled(val);
 	}
 
-	class MarkerPanel extends JPanel {
+	static class MarkerPanel extends JPanel {
 		private static final long serialVersionUID = -467353064175378414L;
 
 		@Override

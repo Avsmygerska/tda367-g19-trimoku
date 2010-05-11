@@ -1,7 +1,6 @@
 package control;
 
 import java.util.ArrayList;
-import view.MainFrame;
 import view.UserInterface;
 
 import java.util.concurrent.CountDownLatch;
@@ -13,7 +12,6 @@ public class GameLogic {
 	private ArrayList<User> players;
 	private int active;
 	private Board board;
-	MainFrame mainframe;
 	CountDownLatch ready;
 
 	UserInterface ui;
@@ -83,9 +81,5 @@ public class GameLogic {
 				active = (active+1)%players.size();
 			}
 		}
-	}
-
-	public void setMainFrame(MainFrame mf){
-		this.mainframe = mf;
 	}
 }
