@@ -1,7 +1,9 @@
 package view;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -38,7 +40,7 @@ public class Render implements GLEventListener {
 
 	private int rows, cols; // Number of positions in X, Y and Z
 	private float spacingRow = 1.25f, spacingCol = 1.25f;
-	
+
 	private ArrayList<Point> order;
 
 	private boolean[][] pinVisible;
@@ -60,7 +62,7 @@ public class Render implements GLEventListener {
 
 		w = edge + (spacingCol * (cols-1))/2;
 		d = edge + (spacingRow * (rows-1))/2;
-		
+
 		order = new ArrayList<Point>();
 		order();
 
@@ -79,7 +81,7 @@ public class Render implements GLEventListener {
 
 		// Set camera
 		glu.gluLookAt(
-				0f, 7.5f, 9f,   // Eyes
+				0f, 7.5f, 9f, // Eyes
 				0f, 1.5f, 0f, // Look at
 				0f, 1f, 0f);  // Up        
 
@@ -96,7 +98,7 @@ public class Render implements GLEventListener {
 
 		// Draw Pieces and Pins        
 		gl.glTranslatef(w-edge, t+pSize, d-edge);
-		
+
 		for(Point o : order) {
 			int row = o.x;
 			int col = o.y;
@@ -119,15 +121,43 @@ public class Render implements GLEventListener {
 
 	public void turn(float deg) { 
 		rotation = (rotation + deg) % 360;
-		System.out.println(rotation);
+		reorder();
 	}
-	
+
 	public void order () {
 		order = new ArrayList<Point>();
 		for(int row = 0; row < board.getRows();row++)
 			for(int col = 0; col < board.getColumns(); col++)
 				order.add(new Point(row,col));
 	}
+	
+	public void reorder() {
+		ArrayList<Point> tmp = new ArrayList<Point>();
+		HashMap<Point,Double> dist = new HashMap<Point,Double>();
+		
+		Point2D cpos = new Point2D.Double(2.5*board.getRows()*spacingRow,2.5*board.getColumns()*spacingCol+9);	
+		
+		for(Point p : order) {
+			double px = p.x - cpos.getX();
+			double py = p.y - cpos.getY();
+			double distance = Math.sqrt(Math.pow(px,2)+Math.pow(py,2));
+			//System.out.println(p.x + "," + p.y + " : " + distance);
+			dist.put(p, distance);
+		}
+		
+		while(!order.isEmpty()) {
+			Point cand = order.get(0);
+			for(Point p : order)
+				if(dist.get(p) <= dist.get(cand))
+					cand = p;
+			
+			order.remove(cand);
+			tmp.add(cand);				
+		}
+		
+		order = tmp;
+	}
+	
 
 	// Draws the bottom plate.
 	private void drawBoard(GL gl) {
@@ -202,8 +232,6 @@ public class Render implements GLEventListener {
 		gl.glEnd();
 	}
 
-
-
 	// Draws a single pin.
 	private void drawPin(GL gl, int length) {		
 		gl.glTranslatef(0f, -pSize, 0f);		
@@ -238,7 +266,7 @@ public class Render implements GLEventListener {
 	public void init(GLAutoDrawable glDrawable) {
 		GL gl = glDrawable.getGL();			
 		gl.glShadeModel(GL.GL_SMOOTH);                              // Enable Smooth Shading
-		gl.glEnable(GL.GL_TEXTURE_2D);
+		gl.glEnable(GL.GL_TEXTURE_2D);                              // Enable Textures
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);                    // Black Background
 		gl.glClearDepth(1.0f);                                      // Depth Buffer Setup
 		gl.glEnable(GL.GL_DEPTH_TEST);							    // Enables Depth Testing
@@ -264,7 +292,7 @@ public class Render implements GLEventListener {
 				"resources/images/board.jpg",
 				"resources/images/frontboard.jpg",
 				"resources/images/sideboard.jpg",
-				"resources/images/frosted_glass.jpg"};
+		"resources/images/frosted_glass.jpg"};
 
 		textures = new int[txts.length];
 		loadTexture(glDrawable,txts);				
@@ -332,11 +360,9 @@ public class Render implements GLEventListener {
 
 	// Shows or hides all pins.
 	public void showPins(boolean val) {
-		for (int row = 0; row < rows; row++) {
-			for (int col = 0; col < cols; col++) {
-				pinVisible[row][col] = val;				
-			}
-		}
+		for (int row = 0; row < rows; row++)
+			for (int col = 0; col < cols; col++)
+				pinVisible[row][col] = val;
 	}	
 
 	public boolean visiblePin(int row, int col) {
@@ -349,7 +375,6 @@ public class Render implements GLEventListener {
 		if(row >= rows)
 			return false;
 
-		// Are there any visible elements on the row?
 		for(int col = 0; col < cols; col++)
 			if(pinVisible[row][col])
 				return true;
@@ -360,8 +385,7 @@ public class Render implements GLEventListener {
 	public boolean visibleCol(int col) {
 		if(col >= cols)
 			return false;
-
-		// Are there any visible elements in the column?
+		
 		for(int row = 0; row < rows; row++)
 			if(pinVisible[row][col])
 				return true;

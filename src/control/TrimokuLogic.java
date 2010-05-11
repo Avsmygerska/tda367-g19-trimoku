@@ -8,7 +8,7 @@ import java.util.concurrent.CountDownLatch;
 
 import model.*;
 
-public class GameLogic {
+public class TrimokuLogic implements GameLogic {
 
 	private ArrayList<User> players;
 	private int active;
@@ -19,7 +19,7 @@ public class GameLogic {
 
 	boolean reset;
 
-	public GameLogic (UserInterface ui) {
+	public TrimokuLogic (UserInterface ui) {
 		players = new ArrayList<User>();
 		setUserInterface(ui);
 		ready = new CountDownLatch(0);
