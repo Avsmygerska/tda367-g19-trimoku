@@ -29,7 +29,7 @@ public class Trimoku {
 		try { cl.await();
 		} catch (InterruptedException e) { e.printStackTrace();	}		
 		
-		final GameLogic gameLogic = new GameLogic(inst);
+		final TrimokuLogic gameLogic = new TrimokuLogic(inst);
 		
 		// Default game.
 		ArrayList<User> players = new ArrayList<User>();		
