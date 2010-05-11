@@ -13,6 +13,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.WindowConstants;
 
+import view.interfaces.*;
+import control.interfaces.*;
 import model.Board;
 import model.Player;
 import control.*;

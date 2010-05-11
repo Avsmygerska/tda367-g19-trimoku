@@ -1,5 +1,7 @@
 package control;
 
+import control.interfaces.*;
+
 import java.awt.Point;
 import java.util.Arrays;
 
