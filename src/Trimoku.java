@@ -33,7 +33,7 @@ public class Trimoku {
 		
 		// Default game.
 		ArrayList<User> players = new ArrayList<User>();		
-		players.add(new LocalUser(new Player("Player 1",Color.BLUE),inst.getControlPanel()));
+		players.add(new LocalUser(new Player("Player 1",Color.GREEN),inst.getControlPanel()));
 		players.add(new LocalUser(new Player("Player 2",Color.RED),inst.getControlPanel()));		
 		gameLogic.configure(5, 5, 5, players);
 		

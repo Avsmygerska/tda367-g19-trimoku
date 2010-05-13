@@ -1,9 +1,7 @@
 package view;
 
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -14,35 +12,52 @@ import javax.media.opengl.glu.GLUquadric;
 import model.Board;
 import model.Player;
 
-
-
 public class Render implements GLEventListener {
 
 	private Board board;
 	private GLU glu;
 
 	// Textures
-	private int boardTop, boardSide, boardFront, pinTexture, pieceTexture;
+	private int boardTop, boardSide, boardFront, pinTexture, pieceTexture, floorTexture;
 	private int[] textures;
 
-	// Board       Width     Depth    Thickness 
+	// Board width, depth and thickness 
 	private float w,d,t = 0.2f;
 
-	private float defaultRotation = 0;//200f;
+	// Camera rotation.
+	private float defaultRotation = 200f;
 	private float rotation;
 
-	private float[] lightAmbient = {0.4f, 0.4f, 0.4f, 1f};
-	private float[] lightDiffuse = {0.8f, 0.8f, 0.8f, 1f};
-	private float[] lightPosition = {0f, 10.0f, 0f, 1.0f};
+	// Light settings.
+	private float[] lightAmbient  = {0.4f, 0.4f, 0.4f, 1f};
+	private float[] lightDiffuse  = {0.7f, 0.7f, 0.7f, 1f};
+	private float[] lightSpecular = {0.7f, 0.7f, 0.7f, 1f};
+	private float[] lightPosition = {0f, 10f, 0f, 1f};
 
-	private float edge = 0.5f;  // Distance between board edge and first row of pieces.
-	private float pSize = 0.4f; // Radius of a piece.
+	// Common materials
+	private float[] green = {0,1,0,1};
+	private float[] white = {1,1,1,1};
+	private float[] black = {0,0,0,1};
+	private float[] grey  = {0.5f,0.5f,0.5f,1f};
 
-	private int rows, cols; // Number of positions in X, Y and Z
-	private float spacingRow = 1.25f, spacingCol = 1.25f;
+	// Fog settings.
+	private float fogDensity = .055f;
 
-	private ArrayList<Point> order;
+	private float edge     = 0.5f; // Distance between board edge and first row of pieces.
+	private float pSize    = 0.4f; // Radius of a piece.
+	private float pOpacity = 0.7f; // Pieces transparency.
 
+	private int rows, cols; // Number of rows and columns in the current board.
+	private float spacingRow = 1.25f, spacingCol = 1.25f; // Spacing between pins.
+
+	// Orderings used for displaying the pieces with correct blending.
+	private ArrayList<Point> currentOrder;
+	private ArrayList<Point> frOrder;
+	private ArrayList<Point> flOrder;
+	private ArrayList<Point> rrOrder;
+	private ArrayList<Point> rlOrder;
+
+	// What pins are visible?
 	private boolean[][] pinVisible;
 
 	public Render() { glu = new GLU(); }
@@ -52,10 +67,12 @@ public class Render implements GLEventListener {
 		setBoard(board);		
 	}
 
-	public void setBoard(Board board) {
+	public void setBoard(Board board) {		
 		this.board = board;
 		rows = board.getRows();
 		cols = board.getColumns();
+
+		rotation = defaultRotation;
 
 		pinVisible = new boolean[rows][cols];
 		showPins(true);
@@ -63,43 +80,118 @@ public class Render implements GLEventListener {
 		w = edge + (spacingCol * (cols-1))/2;
 		d = edge + (spacingRow * (rows-1))/2;
 
-		order = new ArrayList<Point>();
-		order();
-
-		rotation = defaultRotation;
+		buildOrderings();
+		reorder();		
 	}
 
-	// Ta det försiktigt här.
-	// (columns,layers,row)
+	public void displayChanged(GLAutoDrawable glDrawable, boolean modeChanged, boolean deviceChanged) {}
+
+	public void init(GLAutoDrawable glDrawable) {
+		GL gl = glDrawable.getGL();			
+		gl.glShadeModel(GL.GL_SMOOTH);                              // Enable Smooth Shading
+		gl.glEnable(GL.GL_TEXTURE_2D);                              // Enable Textures
+		gl.glClearColor(0f, 0f, 0f, 1f);                            // Black Background
+		gl.glClearDepth(1.0f);                                      // Depth Buffer Setup
+		gl.glEnable(GL.GL_DEPTH_TEST);							    // Enables Depth Testing
+		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
+		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
+
+		gl.glEnable(GL.GL_LIGHTING);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);		
+
+		gl.glEnable(GL.GL_FOG);
+		gl.glFogi(GL.GL_FOG_MODE, GL.GL_EXP2);
+		gl.glFogfv(GL.GL_FOG_COLOR, grey, 0);
+		gl.glFogf(GL.GL_FOG_DENSITY, fogDensity);
+		gl.glHint(GL.GL_FOG_HINT,GL.GL_NICEST);
+
+		gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT,  lightAmbient,  0);
+		gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE,  lightDiffuse,  0);
+		gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightSpecular, 0);
+		gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);
+
+		//gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+		gl.glEnable(GL.GL_LIGHT1);
+
+		boardTop     = 0;
+		boardFront   = 1;
+		boardSide    = 2;
+		pinTexture   = 0;
+		pieceTexture = 3;
+		floorTexture = 4;
+
+		String[] txts = {
+				"resources/images/board.jpg",
+				"resources/images/frontboard.jpg",
+				"resources/images/sideboard.jpg",
+				"resources/images/frosted_glass.jpg",
+				"resources/images/floor.jpg"};
+
+		textures = new int[txts.length];
+		loadTexture(glDrawable,txts);
+		
+	}
+
+	public void reshape(GLAutoDrawable gLDrawable, int x, int y, int width, int height) {
+		final GL gl = gLDrawable.getGL();
+
+		if (height <= 0) // avoid a divide by zero error!
+			height = 1;
+		final float h = (float) width / (float) height;        
+		gl.glViewport(0, 0, width, height);
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glLoadIdentity();
+
+		glu.gluPerspective(50.0f, h, 1.0, 100.0);
+		gl.glMatrixMode(GL.GL_MODELVIEW);        
+		gl.glLoadIdentity();
+	}
+
+
+	// Ta det försiktigt här (columns,layers,row)
 	public void display(GLAutoDrawable gLDrawable) {
 		GL gl = gLDrawable.getGL();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
 
 		if(board == null)
-			return;
+			return;		
+
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT,  white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE,  white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
+		gl.glMaterialf(GL.GL_FRONT_AND_BACK , GL.GL_SHININESS, 100f);
 
 		// Set camera
 		glu.gluLookAt(
-				0f, 7.5f, 9f, // Eyes
-				0f, 1.5f, 0f, // Look at
-				0f, 1f, 0f);  // Up        
+				0f, 7f, 9f, // Eyes
+				0f, 1f, 0f, // Look at
+				0f, 1f, 0f);  // Up
+		gl.glRotatef(rotation, 0f, 1f, 0f);		
+
+		//Draw background
+		drawBackGround(gl);
 
 		// Draw plate
-		gl.glRotatef(rotation, 0f, 1f, 0f);
 		drawBoard(gl);
 
-		// Top left marker
-		gl.glTranslatef(w,t,d);
-		gl.glBindTexture(GL.GL_TEXTURE_2D,0);
-		gl.glColor3f(0f,1f,0f);
-		glu.gluSphere(glu.gluNewQuadric(), 0.1, 10, 10);
-		gl.glTranslatef(-w,-t,-d);
+		// Top left marker, green color, no texture 
+		gl.glPushMatrix();
+		{
+			gl.glTranslatef(w,t,d);
+			gl.glBindTexture(GL.GL_TEXTURE_2D,0);
+			gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,  green, 0);
+			gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
+			gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 35f);
+			glu.gluSphere(glu.gluNewQuadric(), 0.1, 10, 10);
+		}
+		gl.glPopMatrix();
 
-		// Draw Pieces and Pins        
+		// Draw Pieces and Pins
 		gl.glTranslatef(w-edge, t+pSize, d-edge);
 
-		for(Point o : order) {
+		for(Point o : currentOrder) {
 			int row = o.x;
 			int col = o.y;
 			gl.glTranslatef(-spacingCol*col,0f,-spacingRow*row);
@@ -119,49 +211,50 @@ public class Render implements GLEventListener {
 		gl.glFlush();
 	}
 
-	public void turn(float deg) { 
-		rotation = (rotation + deg) % 360;
-		reorder();
+	// Draw the floor.
+	private void drawBackGround(GL gl) {		
+		gl.glPushMatrix();
+		
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,  white, 0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
+		gl.glMaterialf(GL.GL_FRONT , GL.GL_SHININESS, 100f);
+
+		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[floorTexture]);
+
+		int dst = 15;
+		int stp = 2*dst;		
+
+		gl.glTranslatef(stp, 0, stp);
+
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++) {				
+				gl.glBegin(GL.GL_QUADS);
+				gl.glNormal3f(0.0f, 1.0f, 0.0f);			
+				gl.glTexCoord2f(0,1);
+				gl.glVertex3f(dst,0,dst);
+				gl.glTexCoord2f(1,1);
+				gl.glVertex3f(-dst,0,dst);
+				gl.glTexCoord2f(1,0);
+				gl.glVertex3f(-dst,0,-dst);
+				gl.glTexCoord2f(0,0);
+				gl.glVertex3f(dst,0,-dst);
+				gl.glEnd();
+
+				gl.glTranslatef(-stp, 0, 0);
+			}
+			gl.glTranslatef(3*stp,0,-stp);
+		}
+		gl.glPopMatrix();
 	}
 
-	public void order () {
-		order = new ArrayList<Point>();
-		for(int row = 0; row < board.getRows();row++)
-			for(int col = 0; col < board.getColumns(); col++)
-				order.add(new Point(row,col));
-	}
-	
-	public void reorder() {
-		ArrayList<Point> tmp = new ArrayList<Point>();
-		HashMap<Point,Double> dist = new HashMap<Point,Double>();
-		
-		Point2D cpos = new Point2D.Double(2.5*board.getRows()*spacingRow,2.5*board.getColumns()*spacingCol+9);	
-		
-		for(Point p : order) {
-			double px = p.x - cpos.getX();
-			double py = p.y - cpos.getY();
-			double distance = Math.sqrt(Math.pow(px,2)+Math.pow(py,2));
-			//System.out.println(p.x + "," + p.y + " : " + distance);
-			dist.put(p, distance);
-		}
-		
-		while(!order.isEmpty()) {
-			Point cand = order.get(0);
-			for(Point p : order)
-				if(dist.get(p) <= dist.get(cand))
-					cand = p;
-			
-			order.remove(cand);
-			tmp.add(cand);				
-		}
-		
-		order = tmp;
-	}
-	
-
-	// Draws the bottom plate.
+	// Draws the board.
 	private void drawBoard(GL gl) {
-		gl.glColor3f(1f,1f,1f);
+		gl.glPushMatrix();
+		
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
+		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 100f);
+		
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textures[boardTop]);		
 		gl.glBegin(GL.GL_QUADS);
 
@@ -190,7 +283,6 @@ public class Render implements GLEventListener {
 		gl.glVertex3f( w, -t, d);	// Bottom Left
 		gl.glTexCoord2f(0.0f, 0.0f);
 		gl.glVertex3f(-w, -t, d);	// Bottom Right
-
 
 		// FRONT        
 		gl.glNormal3f(0.0f, 0.0f, 1.0f);		
@@ -230,89 +322,130 @@ public class Render implements GLEventListener {
 		gl.glVertex3f(w, -t,  d);	// Bottom Right
 
 		gl.glEnd();
+		gl.glPopMatrix();
 	}
 
 	// Draws a single pin.
-	private void drawPin(GL gl, int length) {		
-		gl.glTranslatef(0f, -pSize, 0f);		
+	private void drawPin(GL gl, int length) {
+		gl.glPushMatrix();
+
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white,0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, black, 0);
+		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 35f);
+
+		gl.glTranslatef(0f,-pSize, 0f);		
 		gl.glRotatef(-90,1f,0f,0f);
 
-		gl.glColor3f(1f,1f,1f);
-		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pinTexture]);
-
 		GLUquadric q = glu.gluNewQuadric();
-		glu.gluQuadricTexture(q, true);				
+		glu.gluQuadricTexture(q, true);
+		
+		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pinTexture]);
 		glu.gluCylinder(q, 0.1, 0.1, 2*pSize*length+0.3, 10, 10);
 		gl.glRotatef(90,1f,0f,0f);
-		gl.glTranslatef(0f, +pSize, 0f);
+		gl.glTranslatef(0f, 2*pSize*length+0.3f, 0f);
+		gl.glRotatef(-90,1f,0f,0f);
+		
+		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pinTexture]);
+		glu.gluDisk(q, 0, 0.1, 10, 1);
+		gl.glPopMatrix();
 	}
 
 	// Draws a piece for the selected player.
 	private void drawPiece(GL gl, Player p) {
-		gl.glColor4f(p.getRed(), p.getGreen(), p.getBlue(),0.5f);		
-		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pieceTexture]);			
+		gl.glPushMatrix();				
+		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pieceTexture]);
+		gl.glBindTexture(GL.GL_TEXTURE_2D,0);
 
+		float[] ambient  = {p.getRed(),p.getGreen(),p.getBlue(), 1};
+		float[] diffuse  = {p.getRed(),p.getGreen(),p.getBlue(), pOpacity};
+		float[] specular = {1,1,1,1}; 
+		float[] emission = {0.1f,0.1f,0.1f,1};
+
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, ambient,  0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, diffuse,  0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, specular, 0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, emission, 0);
+		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 45f);
+		
 		gl.glEnable(GL.GL_BLEND);
 
 		GLUquadric q = glu.gluNewQuadric();
+		
+		gl.glRotatef(-rotation, 0, 1, 0);
 		glu.gluQuadricTexture(q, true);
-		glu.gluSphere(q, pSize, 10, 10);
+		glu.gluSphere(q, pSize, 20, 20);
 
 		gl.glDisable(GL.GL_BLEND);
+
+		gl.glPopMatrix();
 	}
 
-	public void displayChanged(GLAutoDrawable glDrawable, boolean modeChanged, boolean deviceChanged) {}
+	public void turn(float deg) { 
+		rotation = (rotation + deg) % 360;
 
-	public void init(GLAutoDrawable glDrawable) {
-		GL gl = glDrawable.getGL();			
-		gl.glShadeModel(GL.GL_SMOOTH);                              // Enable Smooth Shading
-		gl.glEnable(GL.GL_TEXTURE_2D);                              // Enable Textures
-		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);                    // Black Background
-		gl.glClearDepth(1.0f);                                      // Depth Buffer Setup
-		gl.glEnable(GL.GL_DEPTH_TEST);							    // Enables Depth Testing
-		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
-		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
+		if(rotation < 0)
+			rotation = 360 - rotation;
 
-		gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT,  lightAmbient,  0);
-		gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE,  lightDiffuse,  0);
-		gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);
-		gl.glEnable(GL.GL_LIGHT1);
-		gl.glEnable(GL.GL_LIGHTING);
-		gl.glEnable(GL.GL_COLOR_MATERIAL);
-		gl.glColorMaterial(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-
-		boardTop     = 0;
-		boardFront   = 1;
-		boardSide    = 2;
-		pinTexture   = 0;
-		pieceTexture = 3;
-
-		String[] txts = {
-				"resources/images/board.jpg",
-				"resources/images/frontboard.jpg",
-				"resources/images/sideboard.jpg",
-		"resources/images/frosted_glass.jpg"};
-
-		textures = new int[txts.length];
-		loadTexture(glDrawable,txts);				
+		reorder();
 	}
 
-	public void reshape(GLAutoDrawable gLDrawable, int x, int y, int width, int height) {
-		final GL gl = gLDrawable.getGL();
+	private void buildOrderings () {
+		ArrayList<Integer> incRows = new ArrayList<Integer>();
+		ArrayList<Integer> decRows = new ArrayList<Integer>();		
+		ArrayList<Integer> incCols = new ArrayList<Integer>();
+		ArrayList<Integer> decCols = new ArrayList<Integer>();	
 
-		if (height <= 0) // avoid a divide by zero error!
-			height = 1;
-		final float h = (float) width / (float) height;        
-		gl.glViewport(0, 0, width, height);
-		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glLoadIdentity();
+		for(int r = 0; r < rows; r++)
+			incRows.add(r);
 
-		glu.gluPerspective(50.0f, h, 1.0, 100.0);
-		gl.glMatrixMode(GL.GL_MODELVIEW);        
-		gl.glLoadIdentity();
-	}	
+		for(int r = rows-1; r >= 0; r--)
+			decRows.add(r);
 
+		for(int c = 0; c < cols; c++)
+			incCols.add(c);
+
+		for(int r = cols-1; r >= 0; r--)
+			decCols.add(r);
+
+		// Front left order. Increasing columns, decreasing rows.
+		flOrder = new ArrayList<Point>();
+		for(Integer col : incCols)
+			for(Integer row : decRows)
+				flOrder.add(new Point(row,col));
+
+		// Front right order. Decreasing rows, decreasing columns.
+		frOrder = new ArrayList<Point>();
+		for(Integer row : decRows)
+			for(Integer col : decCols)
+				frOrder.add(new Point(row,col));
+
+		// Rear left order. Increasing rows. Increasing columns.
+		rlOrder = new ArrayList<Point>();
+		for(Integer row : incRows)
+			for(Integer col : incCols)
+				rlOrder.add(new Point(row,col));
+
+		// Rear right order. Decreasing columns. Increasing rows.
+		rrOrder = new ArrayList<Point>();
+		for(Integer col : decCols)
+			for(Integer row : incRows)
+				rrOrder.add(new Point(row,col));
+	}
+
+	private void reorder() {
+		if(rotation <= 90) {
+			currentOrder = flOrder;
+		} else if(rotation <= 180) {
+			currentOrder = rlOrder;
+		} else if (rotation <= 270) {
+			currentOrder = rrOrder;
+		} else {
+			currentOrder = frOrder;
+		}
+	}
+
+	// Loads the textures specified in the string array.  
 	public boolean loadTexture (GLAutoDrawable glDrawable, String files[]) {
 		GL gl = glDrawable.getGL();
 		gl.glGenTextures(files.length, textures, 0);
@@ -340,18 +473,21 @@ public class Render implements GLEventListener {
 		return true;
 	}
 
-	// Switches the visibility state for the selected pin.
+
+	// Switches the visibility for the selected pin.
 	public void switchPin(int row, int col) {
-		if( row < rows && col < cols)
+		if(row < rows && col < cols)
 			pinVisible[row][col] = !pinVisible[row][col];
 	}
 
+	// Sets the visibility of all pins on the specified row.
 	public void setRow(int row, boolean val) {
 		if(row < rows)
 			for(int col = 0; col < cols; col++)
 				pinVisible[row][col] = val;
 	}
 
+	// Sets the visibility of all pins on the specified column.
 	public void setCol(int col, boolean val) {
 		if(col < cols)
 			for(int row = 0; row < rows; row++)
@@ -365,30 +501,29 @@ public class Render implements GLEventListener {
 				pinVisible[row][col] = val;
 	}	
 
-	public boolean visiblePin(int row, int col) {
+	// Returns the visibility of the specified pin.
+	public boolean visiblePin(int row, int col) {		
 		if (row < rows && col < cols)
 			return pinVisible[row][col];
 		return false;
 	}
 
+	// Returns true if there are any visible pieces on the given row, false otherwise. 
 	public boolean visibleRow(int row) {
-		if(row >= rows)
-			return false;
-
-		for(int col = 0; col < cols; col++)
-			if(pinVisible[row][col])
-				return true;
+		if(row < rows)
+			for(int col = 0; col < cols; col++)
+				if(pinVisible[row][col])
+					return true;
 
 		return false;
 	}
 
+	// Returns true if there are any visible pieces on the given column, false otherwise.
 	public boolean visibleCol(int col) {
-		if(col >= cols)
-			return false;
-		
-		for(int row = 0; row < rows; row++)
-			if(pinVisible[row][col])
-				return true;
+		if(col < cols)
+			for(int row = 	0; row < rows; row++)
+				if(pinVisible[row][col])
+					return true;
 
 		return false;
 	}	
