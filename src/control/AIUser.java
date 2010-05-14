@@ -13,10 +13,14 @@ public class AIUser extends User {
 
 	private ArrayList<Point> diagonalTopDown = new ArrayList<Point>();
 	private ArrayList<Point> diagonalDownTop = new ArrayList<Point>();
-	private int defensiveMaxDiagonalZ = 0;
+	private int defensiveRowColumnDiagonalLayer = 0;
+	private int defensiveRowLayerDiagonalStartColumn = 0;
+	private int defensiveColumnLayerDiagonalStartRow = 0;
+	private int currentDiagonal;
+	private int currentDiagonalLength;
 	private boolean [][] defensivePossibleWinZ;
-	private boolean [][] defensivePossibleWinXDiagonal;
-	private boolean [][] defensivePossibleWinYDiagonal;
+	private boolean [][] defensivePossibleWinRowLayerDiagonal;
+	private boolean [][] defensivePossibleWinColumnLayerDiagonal;
 	private boolean [][][] defensivePossibleWinX;
 	private boolean [][][] defensivePossibleWinY;
 	private boolean defensivePossibleWinInnerDiagonalXTopToDown;
@@ -47,7 +51,7 @@ public class AIUser extends User {
 	public void doTurn(Board b) {
 		hasPlaced = false;
 		if(count == 0){
-			
+
 			defensivePossibleWinInnerDiagonalXTopToDown = true;
 			defensivePossibleWinInnerDiagonalXDownToTop = true;
 			defensivePossibleWinInnerDiagonalYTopToDown = true;
@@ -62,8 +66,8 @@ public class AIUser extends User {
 			defensivePossibleWinZ = new boolean [b.getRows()][b.getColumns()];
 			defensivePossibleWinX = new boolean [b.getRows()][b.getColumns()][b.getLayers()];
 			defensivePossibleWinY = new boolean [b.getRows()][b.getColumns()][b.getLayers()];
-			defensivePossibleWinXDiagonal = new boolean [2][b.getColumns()];
-			defensivePossibleWinYDiagonal = new boolean [2][b.getColumns()];
+			defensivePossibleWinRowLayerDiagonal = new boolean [2][b.getColumns()];
+			defensivePossibleWinColumnLayerDiagonal = new boolean [2][b.getColumns()];
 
 			offensivePossibleWinZ = new boolean [b.getRows()][b.getColumns()];
 			offensivePossibleWinX = new boolean [b.getRows()][b.getColumns()][b.getLayers()];
@@ -75,7 +79,7 @@ public class AIUser extends User {
 				diagonalTopDown.add(new Point(i,i));
 				diagonalDownTop.add(new Point(b.getRows()-1-i, i));
 				for(int j = 0; j<b.getColumns(); j++){
-					
+
 					defensivePossibleWinZ[i][j] = true;
 					offensivePossibleWinZ[i][j] = true;
 					for(int k = 0; k < b.getLayers(); k++){
@@ -91,8 +95,8 @@ public class AIUser extends User {
 			for(int i = 0; i<2; i++){
 				for(int j = 0; j<b.getColumns(); j++){
 					defensiveDiagonal[i][j] = true;
-					defensivePossibleWinXDiagonal[i][j] = true;
-					defensivePossibleWinYDiagonal[i][j] = true;
+					//defensivePossibleWinRowLayerDiagonal[i][j] = true;
+					//defensivePossibleWinColumnLayerDiagonal[i][j] = true;
 				}
 			}
 			/*for(int i = 0; i<2; i++){
@@ -111,8 +115,8 @@ public class AIUser extends User {
 		// =========================================================================== */
 
 		System.out.println(defensiveDiagonal[0][0] + ", " + defensiveDiagonal[1][0]);
-		
-		
+
+
 		/*for(int i = 0; i < b.getRows(); i++){
 			for(int j = 0; j < b.getColumns()-1; j++){
 				System.out.print(defensivePossibleWinX[i][j][0]+"	|	");
@@ -225,59 +229,193 @@ public class AIUser extends User {
 		 								|		O		|
 		 								|			O	|
 		 								|______________O|
-		 															*/
-		
-		int defensiveMaxDiagonal = 0;
-		int defensiveMaxDiagonalStartX = 0;
-		int defensiveMaxDiagonalStartY = 0;
-		for(int z = 0; z <b.getLayers(); z++){
-			int y = b.getRows() -1;
+		 */
+		currentDiagonal = 0;
+		int defensiveRowColumnMaxDiagonal = 0;
+		int defensiveRowColumnDiagonalStartRow = 0;
+		int defensiveRowColumnDiagonalStartColumn = 0;
+		for(int layer = 0; layer <b.getLayers(); layer++){
+			int y = b.getRows()-1;
 			int maxTopDown = 0;
 			int maxDownTop = 0;
-			for(int i= 0, j = 0; i < b.getRows(); i++, j++){
+			for(int row= 0, column = 0; row < b.getRows(); row++, column++){
 
-				if(b.peek(i, j, z)!= null && !b.peek(i, j, z).equals(getPlayer())){
+				if(b.peek(row, column, layer)!= null && !b.peek(row, column, layer).equals(getPlayer())){
 					maxTopDown++;
 				}
-				if(b.peek(i, y-j, z)!= null && !b.peek(i, y-j, z).equals(getPlayer())){
+				if(b.peek(row, y-column, layer)!= null && !b.peek(row, y-column, layer).equals(getPlayer())){
 					maxDownTop++;
 				}
 			}
-			if(defensiveMaxDiagonal < maxTopDown && defensiveDiagonal[0][z]){
-				defensiveMaxDiagonal = maxTopDown;
-				defensiveMaxDiagonalStartX = 0;
-				defensiveMaxDiagonalStartY = 0;
-				defensiveMaxDiagonalZ = z;
+			if(defensiveRowColumnMaxDiagonal < maxTopDown && defensiveDiagonal[0][layer]){
+				defensiveRowColumnMaxDiagonal = maxTopDown;
+				defensiveRowColumnDiagonalStartRow = 0;
+				defensiveRowColumnDiagonalStartColumn = 0;
+				defensiveRowColumnDiagonalLayer = layer;
+				currentDiagonalLength = defensiveRowColumnMaxDiagonal;
 			}
-			if(defensiveMaxDiagonal < maxDownTop && defensiveDiagonal[1][z]){
-				defensiveMaxDiagonal = maxDownTop;
-				defensiveMaxDiagonalStartX = 4;
-				defensiveMaxDiagonalStartY = 0;
-				defensiveMaxDiagonalZ = z;
+			if(defensiveRowColumnMaxDiagonal < maxDownTop && defensiveDiagonal[1][layer]){
+				defensiveRowColumnMaxDiagonal = maxDownTop;
+				defensiveRowColumnDiagonalStartRow = 4;
+				defensiveRowColumnDiagonalStartColumn = 0;
+				defensiveRowColumnDiagonalLayer = layer;
+				currentDiagonalLength = defensiveRowColumnMaxDiagonal;
 			}
 		}
-		System.out.println("diagonal: "+defensiveMaxDiagonal + ","+ defensiveMaxDiagonalZ);
+		//System.out.println("diagonal: "+defensiveRowColumnMaxDiagonal + ","+ defensiveRowColumnDiagonalLayer);
 
-		
-		
+
+
 		/*		 (4,0,4)______________(4,4,4)
-					  /				 /|
+					  /|			 /|
 					 /______________/ |				
-	 	  			|O				| |
-	 				|	O			| |
-	 				|		O		| | (4,4,0)
-	 				|			O	| / 
-	 				|______________O|/
+	 	  			|O |			| |
+	 				|  |O			| |
+	 				|  |____O_______| | (4,4,0)
+	 				| /			O	| / 
+	 				|/_____________O|/
 	 			 (0,0,0)		   (0,4,0)										*/
-		
-		/*for(int column = 0; column < b.getColumns(); column++){	
+
+		boolean possibleWinRowLayer = false;
+		int defensiveMaxRowLayerDiagonal = 0; 
+		int layerHeight = b.getLayers() -1;
+		int defensiveRowLayerDiagonalStartRow = 0;
+		int defensiveRowLayerDiagonalStartLayer = 0;
+		int currentHeightDownTop = 0;
+		int nextHeightDownTop= 0;
+		int currentHeightTopDown = 0;
+		int nextHeightTopDown= 0;
+		for(int column = 0; column < b.getColumns(); column++){	
+			int diagonalDownTop = 0;
+			int diagonalTopDown = 0;
 			for (int row = 0, layer = 0; row < b.getRows() && layer <b.getLayers(); row++, layer++) {
-				
-				if(b.peek(r, c, l))
-				
+
+				if(b.peek(row, column, layer)!= null && !b.peek(row, column, layer).equals(getPlayer())){
+					diagonalDownTop++;
+					if(diagonalDownTop==b.getRows()-1){
+						for(int i = 0; i < b.getRows(); i++){
+							if(b.peek(i, column, i)==null){
+								currentHeightDownTop = countHeight(b, i, column);
+								if(currentHeightDownTop == i){
+									possibleWinRowLayer = true;
+								}
+							}
+						}
+					}
+				}
+				if(b.peek(row, column, layerHeight-layer)!= null && !b.peek(row, column, layerHeight-layer).equals(getPlayer())){
+					diagonalTopDown++;
+					if(diagonalTopDown==b.getRows()-1){
+						for(int i = 0; i < b.getRows(); i++){
+							if(b.peek(i, column, b.getLayers()-i)==null){
+								currentHeightTopDown = countHeight(b, i, column);
+								if(currentHeightTopDown == i){
+									possibleWinRowLayer = true;
+								}
+							}
+						}
+					}
+				}
 			}
-		}*/
-		
+			if(column == 0){
+				//System.out.println("TopDown:" + diagonalTopDown);
+			}
+			if(diagonalTopDown > defensiveMaxRowLayerDiagonal && possibleWinRowLayer){
+				defensiveMaxRowLayerDiagonal = diagonalTopDown;
+				defensiveRowLayerDiagonalStartRow = 0;
+				defensiveRowLayerDiagonalStartLayer = 4;
+				defensiveColumnLayerDiagonalStartRow = column;
+
+			}
+			if(diagonalDownTop > defensiveMaxRowLayerDiagonal && possibleWinRowLayer){
+				defensiveMaxRowLayerDiagonal = diagonalDownTop;
+				defensiveRowLayerDiagonalStartRow = 0;
+				defensiveRowLayerDiagonalStartLayer = 0;
+				defensiveColumnLayerDiagonalStartRow = column;
+			}
+		}
+		//System.out.println("defensiveMaxRowLayerDiagonal: " + defensiveMaxRowLayerDiagonal + ", Current Column:" + defensiveRowLayerDiagonalStartColumn);
+		//System.out.println("maxRowLayer: " +defensiveMaxRowLayerDiagonal + ", MaxRowColumn: " + defensiveRowColumnMaxDiagonal);
+		if(defensiveMaxRowLayerDiagonal > defensiveRowColumnMaxDiagonal){
+			currentDiagonal = 1;
+			currentDiagonalLength = defensiveMaxRowLayerDiagonal;
+		}
+
+
+		/*   (0,0,4)______________(4,0,4)
+				  /|			 /|
+				 /______________/ |				
+				|O |			| |
+				|  |O			| |
+				|  |____O_______| | (4,0,0)
+				| /			O	| / 
+				|/_____________O|/
+			 (0,4,0)		   (4,4,0)										*/
+
+		boolean possibleWinColumnLayer = false;
+		int defensiveMaxColumnLayerDiagonal = 0; 
+		layerHeight = b.getLayers() -1;
+		int defensiveColumnLayerDiagonalStartColumn = 0;
+		int defensiveColumnLayerDiagonalStartLayer = 0;
+		currentHeightDownTop = 0;
+		nextHeightDownTop= 0;
+		currentHeightTopDown = 0;
+		nextHeightTopDown= 0;
+		for(int row = 0; row < b.getRows(); row++){	
+			int diagonalDownTop = 0;
+			int diagonalTopDown = 0;
+			for (int column = 0, layer = 0; column < b.getColumns() && layer <b.getLayers(); column++, layer++) {
+
+				if(b.peek(row, column, layer)!= null && !b.peek(row, column, layer).equals(getPlayer())){
+					diagonalDownTop++;
+					if(diagonalDownTop==b.getRows()-1){
+						for(int i = 0; i < b.getColumns(); i++){
+							if(b.peek(row, i, i)==null){
+								currentHeightDownTop = countHeight(b, row, i);
+								if(currentHeightDownTop == i){
+									possibleWinRowLayer = true;
+								}
+							}
+						}
+					}
+				}
+				if(b.peek(row, column, layerHeight-layer)!= null && !b.peek(row, column, layerHeight-layer).equals(getPlayer())){
+					diagonalTopDown++;
+					if(diagonalTopDown==b.getRows()-1){
+						for(int i = 0; i < b.getRows(); i++){
+							if(b.peek(i, column, b.getLayers()-i)==null){
+								currentHeightTopDown = countHeight(b, i, column);
+								if(currentHeightTopDown == i){
+									possibleWinRowLayer = true;
+								}
+							}
+						}
+					}
+				}
+			}
+			if(row == 0){
+				System.out.println("TopDown:" + diagonalTopDown + ", DownTop:" + diagonalDownTop);
+			}
+			if(diagonalTopDown > defensiveMaxColumnLayerDiagonal && possibleWinRowLayer){
+				defensiveMaxColumnLayerDiagonal = diagonalTopDown;
+				defensiveColumnLayerDiagonalStartRow = 0;
+				defensiveColumnLayerDiagonalStartLayer = 4;
+				defensiveColumnLayerDiagonalStartRow = row;
+
+			}
+			if(diagonalDownTop > defensiveMaxColumnLayerDiagonal && possibleWinRowLayer){
+				defensiveMaxColumnLayerDiagonal = diagonalDownTop;
+				defensiveColumnLayerDiagonalStartRow = 0;
+				defensiveColumnLayerDiagonalStartLayer = 0;
+				defensiveColumnLayerDiagonalStartRow = row;
+			}
+		}
+		System.out.println("defensiveMaxColumnLayerDiagonal: " + defensiveMaxColumnLayerDiagonal + ", Current Column:" + defensiveColumnLayerDiagonalStartRow);
+		//System.out.println("maxColumnLayer: " +defensiveMaxColumnLayerDiagonal + ", MaxRowColumn: " + defensiveRowColumnMaxDiagonal);
+		if(defensiveMaxColumnLayerDiagonal > Math.max(defensiveMaxRowLayerDiagonal , defensiveRowColumnMaxDiagonal)){
+			currentDiagonal = 2;
+			currentDiagonalLength = defensiveMaxColumnLayerDiagonal;
+		}
 
 		/* =========================================================================== //
 								Offensive calculations
@@ -316,6 +454,7 @@ public class AIUser extends User {
 		}*/
 
 		// Räknar vertikalt sett från PinArea
+
 		int offensiveStartXinXDirection = 0;
 		int offensiveCurrentY = 0;
 		int offensiveMaxBallsInARowX = 0;
@@ -393,13 +532,16 @@ public class AIUser extends User {
 		/* =========================================================================== //
 					Where the AI should put the balls, defensive calculations
 		// =========================================================================== */
-
+		System.out.println("Defense: X " + defensiveMaxBallsInARowX + ", Y "+ defensiveMaxBallsInARowY + ", Z " + defensiveMaxBallsInaRowZ
+				+", Diagonal " + currentDiagonalLength);
+		System.out.println("Offensive: X " + offensiveMaxBallsInARowX + ", Y "+ offensiveMaxBallsInARowY + ", Z " + offensiveMaxBallsInaRowZ);
 		if((offensiveMaxBallsInARowX != (b.getRows()-1) && offensiveMaxBallsInARowY != (b.getColumns()-1) && offensiveMaxBallsInaRowZ != (b.getLayers())-1) && 
 				(defensiveMaxBallsInARowX > (b.getRows()-3) || defensiveMaxBallsInARowY > (b.getColumns()-3) || defensiveMaxBallsInaRowZ > (b.getRows()-2) ||
-						defensiveMaxDiagonal > b.getRows()-2)){	
+						currentDiagonalLength > (b.getColumns()-2))){
+			System.out.println(currentDiagonal);
 			if(defensiveMaxBallsInARowX >= defensiveMaxBallsInARowY){
 				if(defensiveMaxBallsInARowX >= defensiveMaxBallsInaRowZ){
-					if(defensiveMaxBallsInARowX > defensiveMaxDiagonal){	
+					if(defensiveMaxBallsInARowX > currentDiagonalLength){	
 						System.out.println("printar i x");
 						int xcurrenty = 0;
 						for(int y = 0; y < b.getColumns(); y++){
@@ -422,7 +564,11 @@ public class AIUser extends User {
 					}
 					// Behöver ändras!
 					else{
-						defensiveDiagonal(b,defensiveMaxDiagonalStartX, defensiveMaxDiagonalStartY);
+						switch(currentDiagonal){
+						case 0:  defensiveRowColumnDiagonal(b,defensiveRowColumnDiagonalStartRow, defensiveRowColumnDiagonalStartColumn); break;
+						case 1:  defensiveRowLayerDiagonal(b, defensiveRowLayerDiagonalStartRow, defensiveRowLayerDiagonalStartLayer); break;
+						case 2:  defensiveColumnLayerDiagonal(b, defensiveColumnLayerDiagonalStartColumn, defensiveColumnLayerDiagonalStartLayer); break;
+						}
 						return;
 
 					}
@@ -430,7 +576,7 @@ public class AIUser extends User {
 
 				}
 				else{
-					if(defensiveMaxBallsInaRowZ > defensiveMaxDiagonal)	
+					if(defensiveMaxBallsInaRowZ > currentDiagonalLength)	
 						if(b.place(defensiveStartXinZDirection, defensiveStartYinZDirection, getPlayer())){
 							//System.out.println(defensivePossibleWinZ[defensiveStartYinYDirection][defensiveCurrentZinYDirection]);
 							defensivePossibleWinZ[defensiveStartXinZDirection][defensiveStartYinZDirection] = false;
@@ -439,15 +585,19 @@ public class AIUser extends User {
 						else{
 							for (int i = 0; i < b.getColumns(); i++) {
 								//System.out.println("Diagonal Z:" + (defensiveMaxDiagonalStartX+i) +", " + (defensiveMaxDiagonalStartY+i));
-								if(b.peek(defensiveMaxDiagonalStartX+i, defensiveMaxDiagonalStartY+i, 0)==null){
-									b.place(defensiveMaxDiagonalStartX+i, defensiveMaxDiagonalStartY, getPlayer());
+								if(b.peek(defensiveRowColumnDiagonalStartRow+i, defensiveRowColumnDiagonalStartColumn+i, 0)==null){
+									b.place(defensiveRowColumnDiagonalStartRow+i, defensiveRowColumnDiagonalStartColumn, getPlayer());
 									return;
 								}
 							}
 
 						}
 					else{
-						defensiveDiagonal(b,defensiveMaxDiagonalStartX, defensiveMaxDiagonalStartY);
+						switch(currentDiagonal){
+						case 0:  defensiveRowColumnDiagonal(b,defensiveRowColumnDiagonalStartRow, defensiveRowColumnDiagonalStartColumn);break;
+						case 1:  defensiveRowLayerDiagonal(b, defensiveRowLayerDiagonalStartRow, defensiveRowLayerDiagonalStartLayer);break;
+						case 2:  defensiveColumnLayerDiagonal(b, defensiveColumnLayerDiagonalStartColumn, defensiveColumnLayerDiagonalStartLayer); break;
+						}
 						return;
 					}
 				}	
@@ -455,7 +605,7 @@ public class AIUser extends User {
 			else{
 
 				if(defensiveMaxBallsInARowY >= defensiveMaxBallsInaRowZ){
-					if(defensiveMaxBallsInARowY > defensiveMaxDiagonal)	
+					if(defensiveMaxBallsInARowY > currentDiagonalLength){
 						System.out.println("printar i y, " + defensiveMaxBallsInARowY);
 						int ycurrentx = 0;
 						for(int x = 0; x < b.getRows(); x++){
@@ -473,16 +623,21 @@ public class AIUser extends User {
 							}
 							defensivePossibleWinZ[defensiveStartYinYDirection][defensiveCurrentZinYDirection] = false;
 							return;
+						}
 					}
 					else{
-						defensiveDiagonal(b,defensiveMaxDiagonalStartX, defensiveMaxDiagonalStartY);
+						switch(currentDiagonal){
+						case 0:  defensiveRowColumnDiagonal(b,defensiveRowColumnDiagonalStartRow, defensiveRowColumnDiagonalStartColumn);break;
+						case 1:  defensiveRowLayerDiagonal(b, defensiveRowLayerDiagonalStartRow, defensiveRowLayerDiagonalStartLayer);break;
+						case 2:  defensiveColumnLayerDiagonal(b, defensiveColumnLayerDiagonalStartColumn, defensiveColumnLayerDiagonalStartLayer); break;
+						}
 						return;
 
 					}
 
 				}
 				else{
-					if(defensiveMaxBallsInaRowZ >= defensiveMaxDiagonal){
+					if(defensiveMaxBallsInaRowZ >= currentDiagonalLength){
 						if(b.place(defensiveStartXinZDirection, defensiveStartYinZDirection, getPlayer())){
 							System.out.println(defensivePossibleWinZ[defensiveStartXinZDirection][defensiveStartYinZDirection]);
 							defensivePossibleWinZ[defensiveStartXinZDirection][defensiveStartYinZDirection] = false;
@@ -490,7 +645,11 @@ public class AIUser extends User {
 						}
 					}
 					else{
-						defensiveDiagonal(b,defensiveMaxDiagonalStartX, defensiveMaxDiagonalStartY);
+						switch(currentDiagonal){
+						case 0:  defensiveRowColumnDiagonal(b,defensiveRowColumnDiagonalStartRow, defensiveRowColumnDiagonalStartColumn);break;
+						case 1:  defensiveRowLayerDiagonal(b, defensiveRowLayerDiagonalStartRow, defensiveRowLayerDiagonalStartLayer);break;
+						case 2:  defensiveColumnLayerDiagonal(b, defensiveColumnLayerDiagonalStartColumn, defensiveColumnLayerDiagonalStartLayer); break;
+						}
 						return;
 					}
 				}
@@ -636,31 +795,92 @@ public class AIUser extends User {
 		return calculateHeight;
 	}
 
-	public void defensiveDiagonal(Board board, int startX, int startY){
+	public void defensiveRowColumnDiagonal(Board board, int startX, int startY){
 		if(startX == 0){
 			for (int i = 0; i < board.getColumns(); i++) {
-				//System.out.println("Diagonal: pew" + (startX+i) +", " + (startY+i));
-				if(board.peek(startX+i, startY+i, defensiveMaxDiagonalZ)==null){
-					board.place(startX+i, startY+i, getPlayer());
-					defensiveDiagonal[0][defensiveMaxDiagonalZ] = false;
-					return;
+				System.out.println("Diagonal: rowColumn" + (startX+i) +", " + (startY+i));
+				if(board.peek(startX+i, startY+i, defensiveRowColumnDiagonalLayer)==null){
+					if(board.place(startX+i, startY+i, getPlayer())){
+						defensiveDiagonal[0][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
 				}
 			}
 		}
 		else{
 			for (int i = 0; i < board.getColumns(); i++) {
-				//System.out.println("Diagonal: pewpew" + (startX-i) +", " + (startY+i));
-				if(board.peek(startX-i, startY+i, defensiveMaxDiagonalZ)==null){
-					board.place(startX-i, startY+i, getPlayer());
-					defensiveDiagonal[1][defensiveMaxDiagonalZ] = false;
-					return;
+				System.out.println("Diagonal: rowColumn" + (startX-i) +", " + (startY+i));
+				if(board.peek(startX-i, startY+i, defensiveRowColumnDiagonalLayer)==null){
+					if(board.place(startX-i, startY+i, getPlayer())){
+						defensiveDiagonal[1][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
 				}
 			}
 		}
 	}
 
+
+	public void defensiveRowLayerDiagonal(Board board, int startX, int startZ){
+		if(startZ == 0){
+			for (int i = 0; i < board.getColumns(); i++) {
+				System.out.println("Diagonal: rowLayer1 " + (startX+i) +","+defensiveRowLayerDiagonalStartColumn +"," + (startZ+i));
+				if(board.peek(startX+i, defensiveRowLayerDiagonalStartColumn , startZ+i)==null){
+					if(board.place(startX+i, defensiveRowLayerDiagonalStartColumn, getPlayer())){
+						//defensiveDiagonal[0][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
+				}
+			}
+		}
+		else{
+			for (int i = 0; i < board.getColumns(); i++) {
+				System.out.println("Diagonal: rowLayer2 " + (startX-i) +", " + (startZ+i));
+				if(board.peek(startX+i, defensiveRowLayerDiagonalStartColumn , startZ-i)==null){
+					if(board.place(startX+i, defensiveRowLayerDiagonalStartColumn, getPlayer())){
+						//defensiveDiagonal[1][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
+				}
+			}
+		}
+	}
+	
+	public void defensiveColumnLayerDiagonal(Board board, int startY, int startZ){
+		System.out.println("ASDSADSADASDASDSADASDSADSAASDSADASDSA");
+		
+		if(startZ == 0){
+			for (int i = 0; i < board.getColumns(); i++) {
+				System.out.println("Diagonal: columnLayer1 " + defensiveColumnLayerDiagonalStartRow + "," +(startY+i) +","+ (startZ+i));
+				if(board.peek(defensiveColumnLayerDiagonalStartRow, startY+i , startZ+i)==null){
+					if(board.place(defensiveColumnLayerDiagonalStartRow, startY+i, getPlayer())){
+						//defensiveDiagonal[0][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
+				}
+			}
+		}
+		else{
+			for (int i = 0; i < board.getColumns(); i++) {
+				System.out.println("Diagonal: rowLayer2 " + (startY-i) +", " + (startZ+i));
+				if(board.peek(defensiveColumnLayerDiagonalStartRow,startY+i, startZ-i)==null){
+					if(board.place(defensiveColumnLayerDiagonalStartRow, startY+i, getPlayer())){
+						//defensiveDiagonal[1][defensiveRowColumnDiagonalLayer] = false;
+						return;
+					}
+				}
+			}
+		}
+		
+		
+	}
 	public String getNotice() {
 		return "Please wait. The AI is working.";
+	}
+
+	public int getWinLength(){
+		int winLength = 5;
+		return winLength;
 	}
 
 	public void disconnect() {}
