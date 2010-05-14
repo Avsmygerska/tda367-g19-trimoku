@@ -41,7 +41,7 @@ public class Render implements GLEventListener {
 	private float[] grey  = {0.5f,0.5f,0.5f,1f};
 
 	// Fog settings.
-	private float fogDensity = .055f;
+	private float fogDensity = 0.03f;
 
 	private float edge     = 0.5f; // Distance between board edge and first row of pieces.
 	private float pSize    = 0.4f; // Radius of a piece.
@@ -95,37 +95,46 @@ public class Render implements GLEventListener {
 		gl.glEnable(GL.GL_DEPTH_TEST);							    // Enables Depth Testing
 		gl.glDepthFunc(GL.GL_LEQUAL);								// The Type Of Depth Testing To Do
 		gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);	// Really Nice Perspective Calculations
-
-		gl.glEnable(GL.GL_LIGHTING);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);		
-
-		gl.glEnable(GL.GL_FOG);
+		
+		// Cull back-faces.
+		gl.glEnable(GL.GL_CULL_FACE);
+		gl.glCullFace(GL.GL_BACK);		
+		
+		// Fog settings.
 		gl.glFogi(GL.GL_FOG_MODE, GL.GL_EXP2);
 		gl.glFogfv(GL.GL_FOG_COLOR, grey, 0);
-		gl.glFogf(GL.GL_FOG_DENSITY, fogDensity);
+		gl.glFogf(GL.GL_FOG_DENSITY, fogDensity);		
 		gl.glHint(GL.GL_FOG_HINT,GL.GL_NICEST);
+		gl.glEnable(GL.GL_FOG);
 
+		// Set up the light source.
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT,  lightAmbient,  0);
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_DIFFUSE,  lightDiffuse,  0);
 		gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightSpecular, 0);
-		gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);
-
-		//gl.glLightModeli(GL.GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+		gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPosition, 0);		
 		gl.glEnable(GL.GL_LIGHT1);
+		
+		// Enable Lighting and set up the blending function.
+		gl.glEnable(GL.GL_LIGHTING);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		
+		gl.glSampleCoverage(1, true);
+		gl.glEnable(GL.GL_MULTISAMPLE);
 
+		// Load and assign textures.
+		pinTexture   = 0;
 		boardTop     = 0;
 		boardFront   = 1;
-		boardSide    = 2;
-		pinTexture   = 0;
-		pieceTexture = 3;
-		floorTexture = 4;
+		boardSide    = 2;		
+		floorTexture = 3;				
+		pieceTexture = 4;
 
 		String[] txts = {
-				"resources/images/board.jpg",
-				"resources/images/frontboard.jpg",
-				"resources/images/sideboard.jpg",
-				"resources/images/frosted_glass.jpg",
-				"resources/images/floor.jpg"};
+				"resources/images/board.jpg",      // 0
+				"resources/images/frontboard.jpg", // 1
+				"resources/images/sideboard.jpg",  // 2		
+				"resources/images/floor.jpg",      // 3
+				"resources/images/marble.jpg"};    // 4
 
 		textures = new int[txts.length];
 		loadTexture(glDrawable,txts);
@@ -181,16 +190,16 @@ public class Render implements GLEventListener {
 		{
 			gl.glTranslatef(w,t,d);
 			gl.glBindTexture(GL.GL_TEXTURE_2D,0);
-			gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,  green, 0);
-			gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
-			gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 35f);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE,  green, 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white, 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
+			gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, 35f);
 			glu.gluSphere(glu.gluNewQuadric(), 0.1, 10, 10);
 		}
 		gl.glPopMatrix();
 
-		// Draw Pieces and Pins
+		// Draw all visible pieces and pins.
 		gl.glTranslatef(w-edge, t+pSize, d-edge);
-
 		for(Point o : currentOrder) {
 			int row = o.x;
 			int col = o.y;
@@ -215,9 +224,10 @@ public class Render implements GLEventListener {
 	private void drawBackGround(GL gl) {		
 		gl.glPushMatrix();
 		
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE,  white, 0);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
-		gl.glMaterialf(GL.GL_FRONT , GL.GL_SHININESS, 100f);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE,  white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
+		gl.glMaterialf(GL.GL_FRONT_AND_BACK , GL.GL_SHININESS, 100f);
 
 		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[floorTexture]);
 
@@ -229,15 +239,16 @@ public class Render implements GLEventListener {
 		for(int i = 0; i < 3; i++) {
 			for(int j = 0; j < 3; j++) {				
 				gl.glBegin(GL.GL_QUADS);
-				gl.glNormal3f(0.0f, 1.0f, 0.0f);			
-				gl.glTexCoord2f(0,1);
-				gl.glVertex3f(dst,0,dst);
-				gl.glTexCoord2f(1,1);
-				gl.glVertex3f(-dst,0,dst);
-				gl.glTexCoord2f(1,0);
-				gl.glVertex3f(-dst,0,-dst);
-				gl.glTexCoord2f(0,0);
-				gl.glVertex3f(dst,0,-dst);
+				
+				gl.glNormal3f(0.0f, 1.0f, 0.0f);				
+				gl.glTexCoord2f(0,0);      // Bottom Left
+				gl.glVertex3f(dst,0,-dst);				
+				gl.glTexCoord2f(1,0);      // Bottom Right
+				gl.glVertex3f(-dst,0,-dst);				
+				gl.glTexCoord2f(1,1);      // Top Right
+				gl.glVertex3f(-dst,0,dst);				
+				gl.glTexCoord2f(0,1);      // Top Left
+				gl.glVertex3f(dst,0,dst);				
 				gl.glEnd();
 
 				gl.glTranslatef(-stp, 0, 0);
@@ -251,75 +262,77 @@ public class Render implements GLEventListener {
 	private void drawBoard(GL gl) {
 		gl.glPushMatrix();
 		
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white, 0);
-		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 100f);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
+		gl.glMaterialf(GL.GL_FRONT_AND_BACK , GL.GL_SHININESS, 100f);
 		
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textures[boardTop]);		
 		gl.glBegin(GL.GL_QUADS);
 
 		// TOP
 		gl.glNormal3f(0.0f, 1.0f, 0.0f);
+		
+		gl.glTexCoord2f(0.0f, 0.0f);
+		gl.glVertex3f( w, t, -d);	// Bottom Left				
+		gl.glTexCoord2f(1.0f, 0.0f);
+		gl.glVertex3f(-w, t, -d);	// Bottom Right		
+		gl.glTexCoord2f(1.0f, 1.0f);
+		gl.glVertex3f(-w, t,  d);	// Top Right		
 		gl.glTexCoord2f(0.0f, 1.0f);
 		gl.glVertex3f( w, t,  d);	// Top Left
-		gl.glTexCoord2f(1.0f, 1.0f);
-		gl.glVertex3f(-w, t,  d);	// Top Right
-		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex3f(-w, t, -d);	// Bottom Right
-		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex3f( w, t, -d);	// Bottom Left
 
 		gl.glEnd();
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textures[boardFront]);		
 		gl.glBegin(GL.GL_QUADS);
-
-		// BACK
-		gl.glNormal3f(0.0f, 0.0f, -1.0f);		
-		gl.glTexCoord2f(0.0f, 1.0f);
-		gl.glVertex3f(-w,  t, d);	// Top Right
-		gl.glTexCoord2f(1.0f, 1.0f);
-		gl.glVertex3f( w,  t, d);	// Top Left
-		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex3f( w, -t, d);	// Bottom Left
+		
+		// FAR END       
+		gl.glNormal3f(0.0f, 0.0f, -1.0f);
 		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex3f(-w, -t, d);	// Bottom Right
-
-		// FRONT        
-		gl.glNormal3f(0.0f, 0.0f, 1.0f);		
+		gl.glVertex3f( w, -t, -d);	// Bottom Right
+		gl.glTexCoord2f(1.0f, 0.0f);
+		gl.glVertex3f(-w, -t, -d);	// Bottom Left		
 		gl.glTexCoord2f(1.0f, 1.0f);
 		gl.glVertex3f(-w,  t, -d);	// Top Right
+		gl.glTexCoord2f(0.0f, 1.0f);		
+		gl.glVertex3f( w,  t, -d);	// Top Left		
+		
+		// NEAR END
+		gl.glNormal3f(0.0f, 0.0f, 1.0f);
 		gl.glTexCoord2f(0.0f, 1.0f);
-		gl.glVertex3f( w,  t, -d);	// Top Left
-		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex3f( w, -t, -d);	// Bottom Left
+		gl.glVertex3f( w,  t, d);	// Top Left
+		gl.glTexCoord2f(1.0f, 1.0f);
+		gl.glVertex3f(-w,  t, d);   // Top Right
 		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex3f(-w, -t, -d);	// Bottom Right
+		gl.glVertex3f(-w, -t, d);	// Bottom Right
+		gl.glTexCoord2f(0.0f, 0.0f);
+		gl.glVertex3f( w, -t, d);	// Bottom Left
 
 		gl.glEnd();
 		gl.glBindTexture(GL.GL_TEXTURE_2D, textures[boardSide]);		
 		gl.glBegin(GL.GL_QUADS);
 
-		// RIGHT
-		gl.glNormal3f(1.0f, 0.0f, 0.0f);
-		gl.glTexCoord2f(1.0f, 1.0f);
-		gl.glVertex3f(-w,  t,  d);	// Top Right
+		// LEFT SIDE
+		gl.glNormal3f(-1f, 0f, 0f);
 		gl.glTexCoord2f(0.0f, 1.0f);
-		gl.glVertex3f(-w,  t, -d);	// Top Left
-		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex3f(-w, -t, -d);	// Bottom Left
-		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex3f(-w, -t,  d);	// Bottom Right
-
-		// LEFT
-		gl.glNormal3f(0.0f, 0.0f, 1.0f);
-		gl.glTexCoord2f(0.0f, 1.0f);
-		gl.glVertex3f(w,  t,  d);	// Top Right
+		gl.glVertex3f(-w,  t,  d);	// Top Left
 		gl.glTexCoord2f(1.0f, 1.0f);
-		gl.glVertex3f(w,  t, -d);	// Top Left
+		gl.glVertex3f(-w,  t, -d);	// Top Right
 		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex3f(w, -t, -d);	// Bottom Left
+		gl.glVertex3f(-w, -t, -d);	// Bottom Right
 		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex3f(w, -t,  d);	// Bottom Right
+		gl.glVertex3f(-w, -t,  d);	// Bottom Left
+		
+		// RIGHT SIDE
+		gl.glNormal3f(1f, 0f, 0f);
+		gl.glTexCoord2f(0.0f, 0.0f);
+		gl.glVertex3f(w, -t,  d);	// Bottom Left
+		gl.glTexCoord2f(1.0f, 0.0f);
+		gl.glVertex3f(w, -t, -d);	// Bottom Right		
+		gl.glTexCoord2f(1.0f, 1.0f);
+		gl.glVertex3f(w,  t, -d);	// Top Right
+		gl.glTexCoord2f(0.0f, 1.0f);
+		gl.glVertex3f(w,  t,  d);	// Top Left
 
 		gl.glEnd();
 		gl.glPopMatrix();
@@ -329,10 +342,10 @@ public class Render implements GLEventListener {
 	private void drawPin(GL gl, int length) {
 		gl.glPushMatrix();
 
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, white,0);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, black, 0);
-		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 35f);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white,0);
+		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
+		gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, 35f);
 
 		gl.glTranslatef(0f,-pSize, 0f);		
 		gl.glRotatef(-90,1f,0f,0f);
@@ -353,30 +366,27 @@ public class Render implements GLEventListener {
 
 	// Draws a piece for the selected player.
 	private void drawPiece(GL gl, Player p) {
-		gl.glPushMatrix();				
+		gl.glPushMatrix();
 		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pieceTexture]);
-		gl.glBindTexture(GL.GL_TEXTURE_2D,0);
 
-		float[] ambient  = {p.getRed(),p.getGreen(),p.getBlue(), 1};
-		float[] diffuse  = {p.getRed(),p.getGreen(),p.getBlue(), pOpacity};
-		float[] specular = {1,1,1,1}; 
-		float[] emission = {0.1f,0.1f,0.1f,1};
+		float[] ambient  = {p.getRed(),p.getGreen(),p.getBlue(),1};
+		float[] diffuse  = {p.getRed(),p.getGreen(),p.getBlue(),pOpacity};
+		float[] specular = {0.9f,0.9f,0.9f,1};
+		float[] emission = {p.getRed()*0.2f,p.getGreen()*0.2f,p.getBlue()*0.2f,1}; 
 
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, ambient,  0);
-		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE, diffuse,  0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,  ambient,  0);
+		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,  diffuse,  0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, specular, 0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, emission, 0);
-		gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 45f);
+		gl.glMaterialf(GL.GL_FRONT,  GL.GL_SHININESS, 5f);
 		
 		gl.glEnable(GL.GL_BLEND);
 
 		GLUquadric q = glu.gluNewQuadric();
 		
-		gl.glRotatef(-rotation, 0, 1, 0);
+		//gl.glRotatef(-rotation, 0, 1, 0);
 		glu.gluQuadricTexture(q, true);
 		glu.gluSphere(q, pSize, 20, 20);
-
-		gl.glDisable(GL.GL_BLEND);
 
 		gl.glPopMatrix();
 	}
