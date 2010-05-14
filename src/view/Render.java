@@ -118,8 +118,11 @@ public class Render implements GLEventListener {
 		gl.glEnable(GL.GL_LIGHTING);
 		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		
+		// 
 		gl.glSampleCoverage(1, true);
 		gl.glEnable(GL.GL_MULTISAMPLE);
+		gl.glHint (GL.GL_LINE_SMOOTH_HINT, GL.GL_NICEST);
+		gl.glEnable (GL.GL_LINE_SMOOTH);
 
 		// Load and assign textures.
 		pinTexture   = 0;
@@ -384,10 +387,8 @@ public class Render implements GLEventListener {
 
 		GLUquadric q = glu.gluNewQuadric();
 		
-		//gl.glRotatef(-rotation, 0, 1, 0);
 		glu.gluQuadricTexture(q, true);
 		glu.gluSphere(q, pSize, 20, 20);
-
 		gl.glPopMatrix();
 	}
 

@@ -9,16 +9,43 @@ public class Board {
 	
 	private int rows, cols, lays;
 	private Point lastMove;
+	private int win;
 	
+	private ArrayList<Integer> incCols;
+	private ArrayList<Integer> decCols;
+	private ArrayList<Integer> incRows;
+	private ArrayList<Integer> decRows;
+	private ArrayList<Integer> incLays;
+	private ArrayList<Integer> decLays;
 	
 	public Board(int r, int c, int l) {
 		rows = r;
 		cols = c;
 		lays = l;
+		win  = Math.min(Math.min(r, c), l);
 		
 		lastMove = new Point();
 		brd = new Player[rows][cols][lays];
-	}
+		
+		incCols = new ArrayList<Integer>();
+		for(int i = 0; i < c; i++) incCols.add(i);
+		
+		incRows = new ArrayList<Integer>();
+		for(int i = 0; i < r; i++) incRows.add(i);
+		
+		incLays = new ArrayList<Integer>();
+		for(int i = 0; i < l; i++) incLays.add(i);
+		
+		decCols = new ArrayList<Integer>();
+		for(int i = c - 1; i > 0; i--) decCols.add(i);
+		
+		decRows = new ArrayList<Integer>();
+		for(int i = r - 1; i > 0; i--) decRows.add(i);
+		
+		decLays = new ArrayList<Integer>();
+		for(int i = l - 1; i > 0; i--)
+			decLays.add(i);		
+	}	
 	
 	// Could return a null pointer, if there is no peice at the specified place.
 	public Player peek(int r, int c, int l) {
@@ -40,13 +67,14 @@ public class Board {
 	
 	public int getRows() { return rows; }
 	public int getColumns() { return cols; }
-	public int getLayers() { return lays; }	
+	public int getLayers() { return lays; }
+	public int getWinLength() { return win; }
 	
 	public boolean tryPlace(int row, int col) {
 		if (row >= rows || col >= cols)
 			return false;
 		
-		for(int l = 0; l < lays;l++){
+		for(int l : incLays){
 			if(brd[row][col][l] == null){				
 				return true;
 			}		
@@ -59,9 +87,9 @@ public class Board {
 		if (row >= rows || col >= cols)
 			return false;
 		
-		for(int i = 0; i < lays;i++){
-			if(brd[row][col][i] == null){
-				brd[row][col][i] = p;
+		for(int l : incLays){
+			if(brd[row][col][l] == null){
+				brd[row][col][l] = p;
 				lastMove.x = row;
 				lastMove.y = col;
 				return true;
@@ -70,41 +98,27 @@ public class Board {
 		return false;
 	}
 	
-	public boolean isFull() {
-		for(int x = 0; x < rows;x++)
-			for(int y = 0; y < cols;y++)
-				for(int z = 0; z < lays;z++)
-					if(brd[x][y][z] == null)
+	public boolean isFull() {		
+		for(int r : incRows)
+			for(int c : incCols)
+				for(int l : incLays)
+					if(brd[r][c][l] == null)
 						return false;
 		return true;
 	}
 	
 	public boolean win(Player p) {
-		
-		if(checkX(p)){
-			return true;
-		}
-		if(checkY(p)){
-			return true;
-		}
-		if(checkZ(p)){
-			return true;
-		}
-		if(checkInnerDiagonals(p)){
-			return true;
-		}
-		
-		return false;
+		return checkX(p) || checkY(p) || checkZ(p) || checkInnerDiagonals(p);
 	}
 	
 	private boolean checkX(Player p){
 		// Check if a player have 5 in a row in the X-dimension
-		for(int y = 0; y < cols; y++){			
-			for(int z = 0; z < lays; z++) {
+		for(int c : incCols){			
+			for(int l : incLays) {
 				int cal = 0;
-				for(int x = 0; x < cols; x++) {
+				for(int r : incCols) {
 					
-					if (brd[x][y][z] == null || !brd[x][y][z].equals(p) ){
+					if (brd[r][c][l] == null || !brd[r][c][l].equals(p) ){
 						break;
 					}
 					cal++;
@@ -115,15 +129,15 @@ public class Board {
 			}			
 		}
 		// Check if a player have won on a diagonal in the X-dimension
-		for(int x = 0; x < rows; x++){
+		for(int r : incRows){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
 			while((winDiagonalDown || winDiagonalUp) && i < rows){
-				if( brd[x][i][i] == null || !brd[x][i][i].equals(p)){
+				if( brd[r][i][i] == null || !brd[r][i][i].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[x][i][rows-1-i] == null || !brd[x][i][rows-1-i].equals(p)){
+				if( brd[r][i][rows-1-i] == null || !brd[r][i][rows-1-i].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
@@ -139,11 +153,11 @@ public class Board {
 	private boolean checkY(Player p){
 		
 		// Check if a player have 5 in a row in the Y-dimension
-		for(int x = 0; x < rows; x++){			
-			for(int z = 0; z < lays; z++) {
+		for(int r : incRows){			
+			for(int l : incLays) {
 				int cal = 0;
-				for(int y = 0; y < cols; y++) {
-					if (brd[x][y][z] == null || !brd[x][y][z].equals(p)){
+				for(int c : incCols) {
+					if (brd[r][c][l] == null || !brd[r][c][l].equals(p)){
 						break;
 					}
 					cal++;
@@ -155,15 +169,15 @@ public class Board {
 		}
 		
 		// Check if a player have won on a diagonal in the y-dimension
-		for(int y = 0; y < cols; y++){
+		for(int c : incCols){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
 			while((winDiagonalDown || winDiagonalUp) && i < cols){
-				if( brd[i][y][i] == null || !brd[i][y][i].equals(p)){
+				if( brd[i][c][i] == null || !brd[i][c][i].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[i][y][cols-1-i] == null || !brd[i][y][cols-1-i].equals(p)){
+				if( brd[i][c][cols-1-i] == null || !brd[i][c][cols-1-i].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
@@ -179,11 +193,11 @@ public class Board {
 	private boolean checkZ(Player p){
 		
 		// Check if a player have 5 in a row in the Z-dimension
-		for(int x = 0; x < rows; x++){
-			for(int y = 0; y < cols; y++) {
+		for(int r : incRows){
+			for(int c : incCols) {
 				int cal = 0;
 				for(int z = 0; z < lays; z++) {
-					if (brd[x][y][z] == null || !brd[x][y][z].equals(p)){
+					if (brd[r][c][z] == null || !brd[r][c][z].equals(p)){
 						break;
 					}
 					cal++;
@@ -194,15 +208,15 @@ public class Board {
 			}			
 		}
 		// Check if a player have won on a diagonal in the z-dimension
-		for(int z = 0; z < lays; z++){
+		for(int l : incLays){
 			boolean winDiagonalDown = true;
 			boolean winDiagonalUp   = true;
 			int i = 0;
 			while((winDiagonalDown || winDiagonalUp) && i < lays){
-				if( brd[i][i][z] == null || !brd[i][i][z].equals(p)){
+				if( brd[i][i][l] == null || !brd[i][i][l].equals(p)){
 					winDiagonalUp = false;
 				}
-				if( brd[lays-1-i][i][z] == null || !brd[lays-1-i][i][z].equals(p)){
+				if( brd[lays-1-i][i][l] == null || !brd[lays-1-i][i][l].equals(p)){
 					winDiagonalDown = false;
 				}
 				i++;
