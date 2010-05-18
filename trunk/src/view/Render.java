@@ -59,6 +59,8 @@ public class Render implements GLEventListener {
 
 	// What pins are visible?
 	private boolean[][] pinVisible;
+	
+	private boolean[][] markedPin;
 
 	public Render() { glu = new GLU(); }
 
@@ -76,6 +78,8 @@ public class Render implements GLEventListener {
 
 		pinVisible = new boolean[rows][cols];
 		showPins(true);
+		markedPin  = new boolean[rows][cols];
+		markPins(false);		
 
 		w = edge + (spacingCol * (cols-1))/2;
 		d = edge + (spacingRow * (rows-1))/2;
@@ -209,7 +213,7 @@ public class Render implements GLEventListener {
 			gl.glTranslatef(-spacingCol*col,0f,-spacingRow*row);
 			if(pinVisible[row][col]) {
 				ArrayList<Player> pieces = board.getPin(row, col);
-				drawPin(gl, pieces.size());
+				drawPin(gl, pieces.size(),markedPin[row][col]);
 				int z = 0;
 				for(Player p : pieces) {
 					drawPiece(gl,p);
@@ -342,10 +346,14 @@ public class Render implements GLEventListener {
 	}
 
 	// Draws a single pin.
-	private void drawPin(GL gl, int length) {
+	private void drawPin(GL gl, int length, boolean marked) {
 		gl.glPushMatrix();
 
-		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		if(marked)
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, black, 0);
+		else
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		
 		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white,0);
 		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
 		gl.glMaterialf(GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, 35f);
@@ -374,14 +382,14 @@ public class Render implements GLEventListener {
 
 		float[] ambient  = {p.getRed(),p.getGreen(),p.getBlue(),1};
 		float[] diffuse  = {p.getRed(),p.getGreen(),p.getBlue(),pOpacity};
-		float[] specular = {0.9f,0.9f,0.9f,1};
-		float[] emission = {p.getRed()*0.2f,p.getGreen()*0.2f,p.getBlue()*0.2f,1}; 
+		float[] specular = {0.8f,0.8f,0.8f,1};
+		float[] emission = {p.getRed()*0.25f,p.getGreen()*0.25f,p.getBlue()*0.25f,1}; 
 
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,  ambient,  0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,  diffuse,  0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, specular, 0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION, emission, 0);
-		gl.glMaterialf(GL.GL_FRONT,  GL.GL_SHININESS, 5f);
+		gl.glMaterialf(GL.GL_FRONT,  GL.GL_SHININESS, 3f);
 		
 		gl.glEnable(GL.GL_BLEND);
 
@@ -484,7 +492,6 @@ public class Render implements GLEventListener {
 		return true;
 	}
 
-
 	// Switches the visibility for the selected pin.
 	public void switchPin(int row, int col) {
 		if(row < rows && col < cols)
@@ -510,7 +517,18 @@ public class Render implements GLEventListener {
 		for (int row = 0; row < rows; row++)
 			for (int col = 0; col < cols; col++)
 				pinVisible[row][col] = val;
-	}	
+	}
+	
+	public void markPin(int row, int col, boolean val) {
+		if(row < rows && col < cols)
+			markedPin[row][col] = val;
+	}
+	
+	public void markPins(boolean val) {
+		for (int row = 0; row < rows; row++)
+			for (int col = 0; col < cols; col++)
+				markedPin[row][col] = val;		
+	}
 
 	// Returns the visibility of the specified pin.
 	public boolean visiblePin(int row, int col) {		

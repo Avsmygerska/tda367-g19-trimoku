@@ -40,7 +40,7 @@ public class TrimokuLogic implements GameLogic {
 		players.addAll(newPlayers);
 		active = 0;
 		
-		board = new Board(x,y,z);
+		board = new Board(x);
 		ui.newModel(board);
 		ready.countDown();
 	}

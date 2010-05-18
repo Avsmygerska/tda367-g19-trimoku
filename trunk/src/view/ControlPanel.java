@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -39,21 +40,22 @@ public class ControlPanel extends JPanel implements Notifier{
 		this.setLayout(new BorderLayout());
 
 		buttonArea = new JPanel();
-		BoxLayout buttonLayout = new BoxLayout(buttonArea, javax.swing.BoxLayout.Y_AXIS);
-		buttonArea.setLayout(buttonLayout);
+		BoxLayout buttonLayout = new BoxLayout(buttonArea, javax.swing.BoxLayout.PAGE_AXIS);
 
 		placeButton = new JButton();
 		placeButton.setAction(getPlaceAction());
+		placeButton.setFocusable(false);
 
 		hideButton = new JButton();
 		hideButton.setAction(getHideAction());
+		hideButton.setFocusable(false);
 
 		buttonArea.add(placeButton);
 		buttonArea.add(hideButton);
 
 		notice = new JLabel();		
 
-		pinArea = new PinArea(1, 1, render);
+		pinArea = new PinArea(render,1, 1);
 		
 		add(pinArea,BorderLayout.NORTH);		
 		add(buttonArea,BorderLayout.CENTER);
@@ -85,8 +87,6 @@ public class ControlPanel extends JPanel implements Notifier{
 
 		active(false);		
 		render.showPins(true);
-		pinArea.showAllPins();
-
 		return placePoint;
 	}
 	
@@ -107,7 +107,8 @@ public class ControlPanel extends JPanel implements Notifier{
 				public void actionPerformed(ActionEvent evt) {					
 					ArrayList<Point> pt = pinArea.getSelectedPins();
 					if(pt.size() == 1) {						
-						placePoint = pt.get(0);						
+						placePoint = pt.get(0);
+						pinArea.showAllPins();
 						latch.countDown();
 					}
 				}
