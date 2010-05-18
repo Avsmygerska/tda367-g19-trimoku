@@ -12,13 +12,7 @@ public class Element<A> implements Comparable<Element<A>> {
 	public int getValue() { return value; }
 	public A getObject() { return object; }
 
-	@Override
 	public int compareTo(Element<A> other) {
-		if( other.getValue() > value)
-			return 1;
-		else if( other.getValue() < value)
-			return -1;
-		else
-			return 0;
+		return ((Integer)other.getValue()).compareTo(value);
 	}
 }

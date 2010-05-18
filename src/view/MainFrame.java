@@ -136,7 +136,7 @@ public class MainFrame extends JFrame implements UserInterface {
 		if(gameMode == 1)
 			players.add(new LocalUser(new Player(player2, player2Col), controlPanel));
 		else
-			players.add(new AIUser(new Player("AI",Color.MAGENTA)));
+			players.add(new TidyAI(new Player("AI",Color.MAGENTA)));
 		gameLogic.configure(xSize, ySize, zSize, players);
 	}
 
