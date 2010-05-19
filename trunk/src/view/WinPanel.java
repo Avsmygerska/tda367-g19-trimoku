@@ -34,28 +34,25 @@ public class WinPanel extends JPanel{
 		try{
 			GridBagLayout thisLayout = new GridBagLayout();
 			setPreferredSize(new Dimension(300,200));
-			thisLayout.rowWeights = new double[] {0.1, 0.1, 0.1, 0.1};
-			thisLayout.rowHeights = new int[] {100, 50};
+			thisLayout.rowWeights    = new double[] {0.1, 0.1, 0.1, 0.1};
+			thisLayout.rowHeights    = new int[] {100, 50};
 			thisLayout.columnWeights = new double[] {0.1, 0.1, 0.1, 0.1};
-			thisLayout.columnWidths = new int[] {100};
-			this.setLayout(thisLayout);
-			JButton newGame  = new JButton();
-			JButton quitGame = new JButton(); 
+			thisLayout.columnWidths  = new int[] {100};
+			setLayout(thisLayout);
+			JButton newGame    = new JButton();
+			JButton quitGame   = new JButton(); 
 			JLabel winnerLabel = new JLabel();
 			
 			newGame.setAction(getStartNewGameAction());
-			newGame.setText("New Game");
 			quitGame.setAction(getQuitGameAction());
-			quitGame.setText("Quit Game");
-			if(!winner.equals("drawn")){
+			
+			if(!winner.equals("drawn"))
 				winnerLabel.setText("Congratulations " + winner + ", you won!");
-			}
-			else{
+			else
 				winnerLabel.setText("Game Over: Drawn Game");
-			}
-			this.add(winnerLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-			this.add(newGame, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 20), 0, 0));
-			this.add(quitGame, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			add(winnerLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			add(newGame,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 20), 0, 0));
+			add(quitGame,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 			
 		}catch(Exception e){
 			e.printStackTrace();
@@ -64,7 +61,7 @@ public class WinPanel extends JPanel{
 	}
 	private AbstractAction getStartNewGameAction(){
 		if(startNewGameAction == null) {
-			startNewGameAction = new AbstractAction("", null) {
+			startNewGameAction = new AbstractAction("New Game", null) {
 				private static final long serialVersionUID = -132098728087120287L;
 
 				public void actionPerformed(ActionEvent evt){
@@ -78,7 +75,7 @@ public class WinPanel extends JPanel{
 	}
 	private AbstractAction getQuitGameAction(){
 		if(quitGameAction == null) {
-			quitGameAction = new AbstractAction("", null) {
+			quitGameAction = new AbstractAction("Quit Game", null) {
 				private static final long serialVersionUID = -132098728087120287L;
 
 				public void actionPerformed(ActionEvent evt){

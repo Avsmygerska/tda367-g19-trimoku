@@ -55,9 +55,8 @@ public class TidyAI extends User {
 			}
 		}
 
-		for(Integer val : sortPoints.keySet()) {
+		for(Integer val : sortPoints.keySet())
 			pqueue.offer(new Element<ArrayList<Point>>(sortPoints.get(val),val));
-		}
 
 		int row, col;
 
