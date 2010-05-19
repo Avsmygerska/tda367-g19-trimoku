@@ -40,18 +40,16 @@ public class ControlPanel extends JPanel implements Notifier{
 		this.setLayout(new BorderLayout());
 
 		buttonArea = new JPanel();
-		BoxLayout buttonLayout = new BoxLayout(buttonArea, javax.swing.BoxLayout.PAGE_AXIS);
 
 		placeButton = new JButton();
 		placeButton.setAction(getPlaceAction());
 		placeButton.setFocusable(false);
+		buttonArea.add(placeButton);
 
 		hideButton = new JButton();
 		hideButton.setAction(getHideAction());
 		hideButton.setFocusable(false);
-
-		buttonArea.add(placeButton);
-		buttonArea.add(hideButton);
+		buttonArea.add(hideButton);		
 
 		notice = new JLabel();		
 
@@ -90,7 +88,6 @@ public class ControlPanel extends JPanel implements Notifier{
 		return placePoint;
 	}
 	
-	@Override
 	public void notifyTurn(String s) {
 		notice.setText(s);
 	}
@@ -124,8 +121,8 @@ public class ControlPanel extends JPanel implements Notifier{
 
 				public void actionPerformed(ActionEvent evt) {
 					for(Point p : pinArea.getSelectedPins()) {
-						render.switchPin(p.x, p.y);
-						
+						// Switch the visibility state for the selected pin and updated the related row and column hiders.						
+						render.switchPin(p.x, p.y);						
 						pinArea.updateRowHider(p.x, render.visibleRow(p.x));
 						pinArea.updateColHider(p.y, render.visibleCol(p.y));
 					}

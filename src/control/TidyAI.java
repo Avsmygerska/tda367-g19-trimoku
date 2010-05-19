@@ -24,7 +24,7 @@ public class TidyAI extends User {
 	public TidyAI(Player p) {
 		super(p);
 	}
-
+	
 	public void doTurn(Board b) {
 		modifier = 10;
 

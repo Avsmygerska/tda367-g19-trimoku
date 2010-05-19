@@ -5,14 +5,12 @@ import java.awt.image.PixelGrabber;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
-
 import javax.imageio.ImageIO;
-
 import com.sun.opengl.util.BufferUtil;
 
 public class Texture {
 	private int width = 0,height = 0;
-	private ByteBuffer pixels;		
+	private ByteBuffer pixels;
 
 	public boolean loadTexture(String filename) {		
 		try {
@@ -21,11 +19,12 @@ public class Texture {
 			height = img.getHeight();
 			int[] packedPixels = new int[width * height];
 
+			// Retrieve the pixels from the image into packedPixels
 			PixelGrabber pixelgrabber = new PixelGrabber(img, 0, 0, width, height, packedPixels, 0, width);
 			pixelgrabber.grabPixels();
 			
-			pixels = BufferUtil.newByteBuffer(packedPixels.length * 3);
-			
+			// Put the pixels into the ByteBuffer we have prepared.
+			pixels = BufferUtil.newByteBuffer(packedPixels.length * 3);			
 			for (int row = height - 1; row >= 0; row--) {
 				for (int col = 0; col < width; col++) {
 					int packedPixel = packedPixels[row *width + col];
@@ -34,7 +33,7 @@ public class Texture {
 					pixels.put((byte) ((packedPixel >> 0)  & 0xFF));
 				}
 			}			
-			pixels.flip();
+			pixels.flip(); // Ready the pixels for reading.
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found.");
@@ -48,8 +47,7 @@ public class Texture {
 		return true;
 	}
 
-	public int getWidth() { return width; }		
-	public int getHeight() { return height;	}
-	public ByteBuffer getPixels() {
-		return pixels; }
+	public int getWidth()         { return width; }		
+	public int getHeight()        { return height; }
+	public ByteBuffer getPixels() { return pixels; }
 }
