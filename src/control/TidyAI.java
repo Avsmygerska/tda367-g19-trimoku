@@ -4,7 +4,6 @@ import control.interfaces.*;
 
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -16,21 +15,21 @@ public class TidyAI extends User {
 	PriorityQueue<Element<ArrayList<Point>>> pqueue;
 	HashMap<Point,Integer> points;
 
-	private int modifier;
-	private int lowerBound;
-	private int offensiveBonus;
-	private int[] mods;
+	private int modifier;							// This is used to calculate the "where to put the next ball" score 
+	private int lowerBound;							// Every score that's lower than this variable will not be included in the PriorityQueue 
+	private int offensiveBonus;                 	// A small bonus for offensive moves    
+	private int[] mods;								// Contains the score for 2-,3- & 4-inARow.
 
 	public TidyAI(Player p) {
 		super(p);
 	}
 	
 	public void doTurn(Board b) {
-		modifier = 10;
+		modifier = 10;	
 
-		mods = new int[b.getWinLength()];
-		for(int i = 0; i < mods.length; i++)
-			mods[i] = (int)Math.pow(modifier,i);
+		mods = new int[b.getWinLength()];			
+		for(int i = 0; i < mods.length; i++)		
+			mods[i] = (int)Math.pow(modifier,i);	// Calculates the score and put it into mods
 
 		offensiveBonus = 5;
 		lowerBound = 30;
@@ -57,8 +56,6 @@ public class TidyAI extends User {
 		}
 
 		for(Integer val : sortPoints.keySet()) {
-			System.out.println(val + " : ");
-			System.out.println(sortPoints.get(val));
 			pqueue.offer(new Element<ArrayList<Point>>(sortPoints.get(val),val));
 		}
 
@@ -77,12 +74,12 @@ public class TidyAI extends User {
 			}
 
 			if(b.place(row, col, getPlayer())) {
-				System.out.println("Putting a piece at: " + row + "," + col+'\n');
 				break;
 			}
 		}
 	}
-
+	
+	
 	private void vertical(Board board) {
 		for(int row = 0; row < board.getRows(); row++)
 			for(int col = 0; col < board.getColumns(); col++)
