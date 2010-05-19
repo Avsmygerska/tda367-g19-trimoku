@@ -15,7 +15,6 @@ import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
@@ -24,12 +23,12 @@ import control.LocalUser;
 import control.TidyAI;
 import model.Player;
 
-public class NewGame extends JPanel {
+public class NewGameFrame extends JFrame {
 	private static final long serialVersionUID = -8006283261844224326L;
 
 	private int boardSize;
 	private MainFrame mf;
-	private JFrame frame;
+	private static NewGameFrame ngf;
 	
 	private JLabel player1Label;
 	private JLabel player2Label;
@@ -70,14 +69,24 @@ public class NewGame extends JPanel {
 
 	private String[] colName = {"Red","Blue","Green","Orange"};
 	private Color[] colors = {Color.RED,Color.BLUE,Color.GREEN,new Color(255,70,0)};
+	
+	public static NewGameFrame getInstance(MainFrame mf) {
+		if(ngf == null)
+			ngf = new NewGameFrame(mf);
+		return ngf;
+	}
 
-	public NewGame(MainFrame mf, JFrame frame) {
-		super();
-		frame.add(this);
+	private NewGameFrame(MainFrame mf) {
+		super();		
 		this.mf = mf;
-		this.frame = frame;	
-
-		initGUI();
+		setTitle("New Game");
+		
+		setPreferredSize(new Dimension(500,400));
+		setLocation(550, 280);		
+		setVisible(true);
+		
+		pack();
+		initGUI();		
 	}
 
 	private void initGUI() {
@@ -272,7 +281,7 @@ public class NewGame extends JPanel {
 						players.add(new TidyAI(new Player("AI",new Color(200,138,101))));
 					}
 					mf.startNewGame(players, boardSize, boardSize, boardSize);
-					frame.dispose();
+					setVisible(false);
 				}
 			};
 		}
@@ -287,7 +296,7 @@ public class NewGame extends JPanel {
 				private static final long serialVersionUID = 1085655044529206578L;
 
 				public void actionPerformed(ActionEvent evt){
-					frame.dispose();					
+					setVisible(false);					
 				}
 			};
 		}
@@ -323,7 +332,7 @@ public class NewGame extends JPanel {
 	}
 
 	// If the two associated JComboBoxes collide the changed one is reset to it's previous value.  
-	class getColor extends AbstractAction {
+	static class getColor extends AbstractAction {
 		private static final long serialVersionUID = -3636924121100604109L;
 		private int index;
 		private JComboBox me;
@@ -342,4 +351,13 @@ public class NewGame extends JPanel {
 		}
 
 	}
+
+	public void activate() {
+		setLocation(550, 280);
+		setVisible(true);
+		setAlwaysOnTop(true);
+		setAlwaysOnTop(false);
+
+	}
 }
+

@@ -9,16 +9,13 @@ import javax.swing.JPanel;
 
 import com.sun.opengl.util.FPSAnimator;
 
-import model.*;
-
 public class RenderPanel extends JPanel{
 
 	private static final long serialVersionUID = 27030460017242914L;
 	private Render render;
 	private GLCanvas glCanvas;
 	private FPSAnimator animator;
-	private OurMouseListener mouseAdapter;
-	
+	private OurMouseListener mouseAdapter;	
 	
 	RenderPanel(int dimX, int dimY) {
 		render       = new Render();

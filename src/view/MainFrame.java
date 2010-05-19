@@ -43,6 +43,7 @@ public class MainFrame extends JFrame implements UserInterface {
 	
 	private MainFrame() {
 		super();
+		setTitle("Trimoku");
 		initGUI();
 	}
 
@@ -51,16 +52,13 @@ public class MainFrame extends JFrame implements UserInterface {
 		setLayout(new BorderLayout());
 		setResizable(false);		
 		
-		NewGameMenuOption = new JMenuItem();
-		NewGameMenuOption.setText("New Game");
+		NewGameMenuOption = new JMenuItem("New Game");
 		NewGameMenuOption.setAction(getNewGameAction());
 		
-		ExitGameMenuOption = new JMenuItem();
-		ExitGameMenuOption.setText("Exit Game");
+		ExitGameMenuOption = new JMenuItem("Exit Game");
 		ExitGameMenuOption.setAction(getExitGameAction());
 		
-		jMenu1 = new JMenu();
-		jMenu1.setText("File");
+		jMenu1 = new JMenu("File");
 		jMenu1.add(NewGameMenuOption);
 		jMenu1.add(ExitGameMenuOption);
 		MenuBar = new JMenuBar();
@@ -68,9 +66,8 @@ public class MainFrame extends JFrame implements UserInterface {
 		MenuBar.add(jMenu1);		
 
 		DDD = new RenderPanel(600,600);
-		add(DDD, BorderLayout.CENTER);
-		
 		controlPanel = new ControlPanel(DDD.getRender());
+		add(DDD, BorderLayout.CENTER);		
 		add(controlPanel,BorderLayout.EAST);
 		
 		pack();
@@ -111,14 +108,7 @@ public class MainFrame extends JFrame implements UserInterface {
 	}
 	
 	public void newGame() {
-		JFrame frame = new JFrame();
-		NewGame newgame = new NewGame(mainFrame, frame);
-		frame.setPreferredSize(new Dimension(500,400));
-		frame.setLocation(550, 280);
-		frame.setTitle("New Game");
-		frame.add(newgame);
-		frame.pack();
-		frame.setVisible(true);
+		NewGameFrame.getInstance(this).activate();
 	}
 		
 	public void startNewGame(ArrayList<User> players, int xSize, int ySize, int zSize){
