@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -16,8 +15,6 @@ import javax.swing.WindowConstants;
 import view.interfaces.*;
 import control.interfaces.*;
 import model.Board;
-import model.Player;
-import control.*;
 
 public class MainFrame extends JFrame implements UserInterface {
 
@@ -50,12 +47,10 @@ public class MainFrame extends JFrame implements UserInterface {
 	}
 
 	private void initGUI() {
-		BorderLayout thisLayout = new BorderLayout();
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		getContentPane().setLayout(thisLayout);	
-
-		this.setResizable(false);
-
+		setLayout(new BorderLayout());
+		setResizable(false);		
+		
 		NewGameMenuOption = new JMenuItem();
 		NewGameMenuOption.setText("New Game");
 		NewGameMenuOption.setAction(getNewGameAction());
@@ -73,9 +68,10 @@ public class MainFrame extends JFrame implements UserInterface {
 		MenuBar.add(jMenu1);		
 
 		DDD = new RenderPanel(600,600);
-		getContentPane().add(DDD, BorderLayout.CENTER);
+		add(DDD, BorderLayout.CENTER);
+		
 		controlPanel = new ControlPanel(DDD.getRender());
-		getContentPane().add(controlPanel,BorderLayout.EAST);
+		add(controlPanel,BorderLayout.EAST);
 		
 		pack();
 		DDD.start();		
@@ -103,14 +99,11 @@ public class MainFrame extends JFrame implements UserInterface {
 					newGame();
 				}
 			};
-		}
-				
+		}				
 		return NewGameAction;
 	}
 	
-	public ControlPanel getControlPanel() {
-		return controlPanel;
-	}
+	public ControlPanel getControlPanel() { return controlPanel; }
 	
 	public void quit() {
 		DDD.stop();
@@ -127,20 +120,11 @@ public class MainFrame extends JFrame implements UserInterface {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
-	// Det utkommenterade skall vara med senare
-	
-	public void startNewGame(int gameMode, String player1, String player2, int xSize, int ySize, int zSize, Color player1Col, Color player2Col){
-		ArrayList<User> players = new ArrayList<User>();
-		players.add(new LocalUser(new Player(player1, player1Col), controlPanel));		
-		if(gameMode == 1)
-			players.add(new LocalUser(new Player(player2, player2Col), controlPanel));
-		else
-			players.add(new TidyAI(new Player("AI",Color.MAGENTA)));
+		
+	public void startNewGame(ArrayList<User> players, int xSize, int ySize, int zSize){
 		gameLogic.configure(xSize, ySize, zSize, players);
 	}
 
-	@Override
 	public void drawnGame() {
 		JFrame frame = new JFrame();
 		WinPanel winpanel = new WinPanel("drawn", MainFrame.this, frame);
@@ -154,7 +138,6 @@ public class MainFrame extends JFrame implements UserInterface {
 		frame.setVisible(true);	
 	}
 
-	@Override
 	public void wonGame(User u) {
 		JFrame frame = new JFrame();
 		WinPanel winpanel = new WinPanel(u.getPlayer().getName(), MainFrame.this, frame);
@@ -174,24 +157,8 @@ public class MainFrame extends JFrame implements UserInterface {
 		pack();
 	}
 	
-	
-	@Override
-	public Notifier getNotifier() {
-		return controlPanel;
-	}
-
-	@Override
-	public void setGameLogic(GameLogic gl) {
-		gameLogic = gl;		
-	}
-
-	@Override
-	public void postGame() {
-		controlPanel.activatePostGameControls();		
-	}
-
-	@Override
-	public void updateModel() {
-		//TODO Don't update the renderer all the time, only when changes have occurred.		
-	}
+	public Notifier getNotifier() { return controlPanel; }
+	public void setGameLogic(GameLogic gl) { gameLogic = gl; }
+	public void postGame() { controlPanel.activatePostGameControls(); }
+	public void updateModel() { /* Not implemented yet. */ }
 }

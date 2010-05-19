@@ -17,19 +17,19 @@ public class RenderPanel extends JPanel{
 	private Render render;
 	private GLCanvas glCanvas;
 	private FPSAnimator animator;
-	private CMA cma;
+	private OurMouseListener mouseAdapter;
 	
 	
 	RenderPanel(int dimX, int dimY) {
-		render = new Render();
-		cma = new CMA(render);
+		render       = new Render();
+		mouseAdapter = new OurMouseListener(render);
 		
 		glCanvas = new GLCanvas(new GLCapabilities());
 		glCanvas.setSize(dimX, dimY);
 		glCanvas.setIgnoreRepaint(true);
 		glCanvas.addGLEventListener(render);
-		glCanvas.addMouseListener(cma);
-		glCanvas.addMouseMotionListener(cma);
+		glCanvas.addMouseListener(mouseAdapter);
+		glCanvas.addMouseMotionListener(mouseAdapter);
 		
 		add(glCanvas);	
 		
@@ -37,39 +37,23 @@ public class RenderPanel extends JPanel{
         animator.setRunAsFastAsPossible(false);		
 	}
 	
-	RenderPanel(int dimX, int dimY, Board b) {
-		render = new Render(b);
-		cma = new CMA(render);
-		
-		glCanvas = new GLCanvas(new GLCapabilities());
-		glCanvas.setSize(dimX, dimY);
-		glCanvas.setIgnoreRepaint(true);
-		glCanvas.addGLEventListener(render);
-		glCanvas.addMouseListener(cma);
-		glCanvas.addMouseMotionListener(cma);
-		
-		add(glCanvas);	
-		
-		animator = new FPSAnimator(glCanvas, 60);
-        animator.setRunAsFastAsPossible(false);           
-	}	
-	
 	public Render getRender() { return render; }	
 	public void start() { animator.start(); }	
-	public void stop() { animator.stop(); }
+	public void stop()  { animator.stop(); }
 }
 
-class CMA implements MouseListener, MouseMotionListener {
+class OurMouseListener implements MouseListener, MouseMotionListener {
 	
 	private Render r;
 	private int x;
 	
-	public CMA(Render r) { this.r = r; }
+	public OurMouseListener(Render r) { this.r = r; }	
 	
-	@Override
+	// Get the horizontal position when the mouse is first pressed.
 	public void mousePressed(MouseEvent m) { x = m.getXOnScreen(); }
 	
-	@Override
+	// Use the distance the mouse has been moved to calculated how much the view 
+	// should be rotated. One full screen equals one full turn.
 	public void mouseDragged(MouseEvent m) {
 		r.turn(360*((m.getXOnScreen()-x)/(1f*m.getComponent().getWidth())));
 		x = m.getXOnScreen();

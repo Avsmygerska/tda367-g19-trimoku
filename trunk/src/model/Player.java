@@ -26,19 +26,15 @@ public class Player {
 	}
 	
 	public float getRed() {
-		if(color.getRed() == 0)
-			return 0f;		
-		return 255f / color.getRed();
+		return color.getRed()/255f;
 	}
+	
 	public float getGreen() {
-		if(color.getGreen() == 0)
-			return 0f;		
-		return 255f / color.getGreen();
+		return color.getGreen() / 255f;
 	}
+	
 	public float getBlue() {
-		if(color.getBlue() == 0)
-			return 0f;		
-		return 255f / color.getBlue();
+		return color.getBlue() / 255F;
 	}
 	
 	public boolean equals(Object o) {

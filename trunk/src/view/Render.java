@@ -58,8 +58,7 @@ public class Render implements GLEventListener {
 	private ArrayList<Point> rlOrder;
 
 	// What pins are visible?
-	private boolean[][] pinVisible;
-	
+	private boolean[][] pinVisible;	
 	private boolean[][] markedPin;
 
 	public Render() { glu = new GLU(); }
@@ -349,10 +348,12 @@ public class Render implements GLEventListener {
 	private void drawPin(GL gl, int length, boolean marked) {
 		gl.glPushMatrix();
 
-		if(marked)
+		// Turn the pin black if it has been marked.
+		if(marked) {
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, black, 0);
-		else
+		} else {
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, white, 0);
+		}
 		
 		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, white,0);
 		gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, black, 0);
@@ -363,14 +364,15 @@ public class Render implements GLEventListener {
 
 		GLUquadric q = glu.gluNewQuadric();
 		glu.gluQuadricTexture(q, true);
-		
+
+		// Draw the pin.
 		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pinTexture]);
 		glu.gluCylinder(q, 0.1, 0.1, 2*pSize*length+0.3, 10, 10);
 		gl.glRotatef(90,1f,0f,0f);
 		gl.glTranslatef(0f, 2*pSize*length+0.3f, 0f);
 		gl.glRotatef(-90,1f,0f,0f);
-		
-		gl.glBindTexture(GL.GL_TEXTURE_2D,textures[pinTexture]);
+
+		// Draw the "lid".
 		glu.gluDisk(q, 0, 0.1, 10, 1);
 		gl.glPopMatrix();
 	}
@@ -382,9 +384,9 @@ public class Render implements GLEventListener {
 
 		float[] ambient  = {p.getRed(),p.getGreen(),p.getBlue(),1};
 		float[] diffuse  = {p.getRed(),p.getGreen(),p.getBlue(),pOpacity};
-		float[] specular = {0.8f,0.8f,0.8f,1};
-		float[] emission = {p.getRed()*0.25f,p.getGreen()*0.25f,p.getBlue()*0.25f,1}; 
-
+		float[] specular = {0.9f,0.9f,0.9f,1};
+		float[] emission = {p.getRed()*0.25f,p.getGreen()*0.25f,p.getBlue()*0.25f,1};
+		
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,  ambient,  0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,  diffuse,  0);
 		gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, specular, 0);
@@ -400,6 +402,7 @@ public class Render implements GLEventListener {
 		gl.glPopMatrix();
 	}
 
+	// Rotate the board by the specified angle.
 	public void turn(float deg) { 
 		rotation = (rotation + deg) % 360;
 
