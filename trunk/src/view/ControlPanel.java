@@ -40,7 +40,6 @@ public class ControlPanel extends JPanel implements Notifier{
 		this.setLayout(new BorderLayout());
 
 		buttonArea = new JPanel();
-
 		placeButton = new JButton();
 		placeButton.setAction(getPlaceAction());
 		placeButton.setFocusable(false);
@@ -69,7 +68,7 @@ public class ControlPanel extends JPanel implements Notifier{
 		hideButton.setEnabled(val);		
 		pinArea.active(val);		
 	}
-
+	
 	public Point doTurn() {
 		
 		placePoint = new Point();		
@@ -113,7 +112,7 @@ public class ControlPanel extends JPanel implements Notifier{
 		}
 		return placeAction;
 	}
-
+	
 	private AbstractAction getHideAction() {		
 		if(hideAction == null) {
 			hideAction = new AbstractAction("Hide", null) {
@@ -131,13 +130,15 @@ public class ControlPanel extends JPanel implements Notifier{
 		}
 		return hideAction;
 	}
-
+	
+	// After winning or loosing a game, this makes the player unable to place but able to inspect the the board.
 	public void activatePostGameControls() {
 		placeButton.setEnabled(false);
 		hideButton.setEnabled(true);
 		pinArea.active(true);		
 	}
-
+	
+	// When starting a new game, this will force the player to do a move to unlock the latch
 	public void forceMove() {
 		placePoint = new Point(0,0);
 		latch.countDown();		

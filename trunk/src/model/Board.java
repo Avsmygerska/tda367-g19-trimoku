@@ -42,15 +42,6 @@ public class Board {
 	public int getLayers()    { return lays; }
 	public int getWinLength() { return win; }
 
-	public boolean tryPlace(int row, int col) {
-		if (row < rows && col < cols)
-			for(int l = 0; l < lays;l++)
-				if(brd[row][col][l] == null)				
-					return true;
-
-		return false;
-	}
-
 	public boolean place(int row, int col, Player p) {
 		if (row < rows && col < cols)
 			for(int l = 0; l < lays; l++)
@@ -58,12 +49,14 @@ public class Board {
 					brd[row][col][l] = p;
 					lastMove.x = row;
 					lastMove.y = col;
+					lastMove = new Point(row, col);
 					return true;
 				}
 
 		return false;
 	}
-
+	
+	// Check if the board is full
 	public boolean isFull() {		
 		for(int r = 0; r < rows; r++)
 			for(int c = 0; c < cols; c++)
@@ -116,7 +109,7 @@ public class Board {
 
 		return false;
 	}
-
+	//// Check if the given player has produced a diagonal line in any direction except the inner diagonals.
 	private boolean diagonalLine(Player p){
 		
 		boolean winDiagonalDown = true;
@@ -165,7 +158,7 @@ public class Board {
 
 		return false;
 	}
-
+	// Check if the given player has produced a line in the inner diagonals.
 	private boolean innerDiagonals(Player p){
 		/* 
 	 		Here we want to check if a player have won in two of the inner diagonals.
