@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Map.Entry;
 
 import model.Board;
 import model.Player;
@@ -55,8 +56,8 @@ public class TidyAI extends User {
 			}
 		}
 
-		for(Integer val : sortPoints.keySet())
-			pqueue.offer(new Element<ArrayList<Point>>(sortPoints.get(val),val));
+		for(Entry<Integer, ArrayList<Point>> ent : sortPoints.entrySet())
+			pqueue.offer(new Element<ArrayList<Point>>(ent.getValue(),ent.getKey()));
 
 		int row, col;
 
