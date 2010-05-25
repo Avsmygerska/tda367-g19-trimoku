@@ -13,15 +13,12 @@ public class TrimokuLogic implements GameLogic {
 	private ArrayList<User> players;
 	private int active;
 	private Board board;
-	CountDownLatch ready;
+	private CountDownLatch ready;
+	private UserInterface ui;
+	private boolean reset;
 
-	UserInterface ui;
-
-	boolean reset;
-
-	public TrimokuLogic (UserInterface ui) {
+	public TrimokuLogic () {
 		players = new ArrayList<User>();
-		setUserInterface(ui);
 		ready = new CountDownLatch(0);
 	}
 
@@ -30,19 +27,30 @@ public class TrimokuLogic implements GameLogic {
 		ui.setGameLogic(this);
 	}
 
-	public void configure (int x, int y, int z, ArrayList<User> newPlayers) {
+	public void configure (int dim, GameMode gm, ControlInterface ci, ArrayList<Player> pl){
 		reset = true;
 		
 		for(User u : players)
 			u.disconnect();
-		
+
 		players.clear();
-		players.addAll(newPlayers);
+
+		switch(gm) {
+		case HOT_SEAT:
+			for(Player p : pl)
+				players.add(new LocalUser(p,ci));
+			break;
+		case AI:
+			players.add(new LocalUser(pl.get(0),ci));
+			players.add(new TidyAI(pl.get(1)));
+			break;
+		}
 		active = 0;
 		
-		board = new Board(x);
+		board = new Board(dim);
 		ui.newModel(board);
 		ready.countDown();
+
 	}
 
 	public void run () {
@@ -54,13 +62,12 @@ public class TrimokuLogic implements GameLogic {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 			if(reset) {
 				// The game was reset for some reason, it's the first players turn
 				active = 0;
 				reset = false;
-			}
-			
+			}			
 			u = players.get(active);
 			ui.getNotifier().notifyTurn(u.getNotice());
 			u.doTurn(board);
@@ -71,7 +78,6 @@ public class TrimokuLogic implements GameLogic {
 				ui.getNotifier().notifyTurn((u.getPlayer().getName() + " has won."));
 				ui.postGame();
 				ui.wonGame(u);
-				
 			} else if(board.isFull()) {
 				// Drawn game.
 				ready = new CountDownLatch(1);

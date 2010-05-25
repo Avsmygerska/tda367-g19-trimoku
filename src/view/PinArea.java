@@ -37,7 +37,7 @@ public class PinArea extends JPanel{
 	private JPanel colButtons;
 	private JPanel marker;
 	private Render render;
-	
+
 	private Icon verticalShow;
 	private Icon verticalHide;
 	private Icon horisontalShow;
@@ -83,10 +83,10 @@ public class PinArea extends JPanel{
 		verticalShow   = buildIcon("Show",true);		
 		horisontalHide = buildIcon("Hide",false);
 		horisontalShow = buildIcon("Show",false);
-		
+
 		constructButtons(rows,cols);
 	}
-	
+
 	private Icon buildIcon(String t,boolean vertical) {
 		Font f = getFont ();
 		FontMetrics fm = getFontMetrics (f);
@@ -197,13 +197,16 @@ public class PinArea extends JPanel{
 
 	public void active(boolean val) {
 		for (Component c : rowButtons.getComponents())
-			c.setEnabled(val);
+			if(c != null)
+				c.setEnabled(val);
 
 		for (Component c : colButtons.getComponents())
-			c.setEnabled(val);
+			if(c != null)
+				c.setEnabled(val);
 
 		for (Component c : bxs.getComponents())
-			c.setEnabled(val);
+			if(c != null)
+				c.setEnabled(val);
 	}
 
 	static class MarkerPanel extends JPanel {
@@ -266,7 +269,7 @@ public class PinArea extends JPanel{
 
 		public void hide(boolean value){
 			val = value;
-			
+
 			Icon ic;
 			if(vertical && val)
 				ic = verticalHide;
@@ -276,7 +279,7 @@ public class PinArea extends JPanel{
 				ic = horisontalHide;
 			else
 				ic = horisontalShow;
-			
+
 			button.setIcon(ic);		
 		}
 	}

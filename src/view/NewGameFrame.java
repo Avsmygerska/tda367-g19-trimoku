@@ -19,6 +19,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import control.interfaces.User;
+import control.interfaces.GameLogic.GameMode;
 import control.LocalUser;
 import control.TidyAI;
 import model.Player;
@@ -265,22 +266,25 @@ public class NewGameFrame extends JFrame {
 				private static final long serialVersionUID = -132098728087120287L;
 
 				public void actionPerformed(ActionEvent evt){
-					ArrayList<User> players = new ArrayList<User>();
+					ArrayList<Player> players = new ArrayList<Player>();
+					GameMode gm = null;
 					if(hsCheckBox.isSelected()){
+						gm = GameMode.HOT_SEAT;
 						String n1 = player1TextField.getText();
 						Color c1  = colors[colorSelectorP1.getSelectedIndex()];						
 						String n2 = player2TextField.getText();
 						Color c2  = colors[colorSelectorP2.getSelectedIndex()];												
-						players.add(new LocalUser(new Player(n1,c1),mf.getControlPanel()));
-						players.add(new LocalUser(new Player(n2,c2),mf.getControlPanel()));						
-					}
-					if(aiCheckBox.isSelected()){
+						players.add(new Player(n1,c1));
+						players.add(new Player(n2,c2));
+							
+					}else if(aiCheckBox.isSelected()){
+						gm = GameMode.AI;
 						Color c  = colors[colorSelectorAI.getSelectedIndex()];
 						String n = aiPlayerTextField.getText();
-						players.add(new LocalUser(new Player(n,c),mf.getControlPanel()));
-						players.add(new TidyAI(new Player("AI",new Color(200,138,101))));
-					}
-					mf.startNewGame(players, boardSize, boardSize, boardSize);
+						players.add(new Player(n,c));
+						players.add(new Player("AI",new Color(200,138,101)));
+					}					
+					mf.startNewGame(boardSize,gm,players);
 					setVisible(false);
 				}
 			};

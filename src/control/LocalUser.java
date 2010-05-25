@@ -2,23 +2,23 @@ package control;
 
 import java.awt.Point;
 import control.interfaces.*;
+import view.interfaces.*;
 import model.*;
-import view.*;
 
 public class LocalUser extends User {
-	private ControlPanel controlPanel;
+	private ControlInterface controlInterface;
 	private boolean disconnect;
 	
-	public LocalUser(Player p, ControlPanel cp) {
+	public LocalUser(Player p, ControlInterface ci) {
 		super(p);		
-		this.controlPanel = cp;
+		controlInterface = ci;
 		disconnect = false;
 	}
 	
 	public void doTurn(Board b) {		
-		Point pt = controlPanel.doTurn();
+		Point pt = controlInterface.getSelected();
 		while(!disconnect && !b.place(pt.x, pt.y,getPlayer()))
-			pt = controlPanel.doTurn();		
+			pt = controlInterface.getSelected();		
 	}
 	
 	public String getNotice() {
@@ -27,7 +27,7 @@ public class LocalUser extends User {
 	
 	public void disconnect() {
 		disconnect = true;		
-		controlPanel.forceMove();
+		controlInterface.forceMove();
 	}
 	
 }
