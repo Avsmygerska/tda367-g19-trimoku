@@ -1,11 +1,10 @@
 package control;
 
 import java.util.ArrayList;
-import view.interfaces.*;
-import control.interfaces.*;
-
 import java.util.concurrent.CountDownLatch;
 
+import control.interfaces.*;
+import view.interfaces.*;
 import model.*;
 
 public class TrimokuLogic implements GameLogic {

@@ -18,10 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
-import control.interfaces.User;
 import control.interfaces.GameLogic.GameMode;
-import control.LocalUser;
-import control.TidyAI;
 import model.Player;
 
 public class NewGameFrame extends JFrame {
