@@ -10,7 +10,6 @@ import view.interfaces.UserInterface;
 public interface GameLogic {
 	
 	public enum GameMode { HOT_SEAT, AI }
-
 	
 	public void setUserInterface(UserInterface ui);
 	

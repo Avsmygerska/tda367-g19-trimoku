@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 import java.util.Map.Entry;
 
-import model.Board;
-import model.Player;
+import model.*;
 
 public class TidyAI extends User {
 
