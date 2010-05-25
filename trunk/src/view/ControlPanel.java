@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 
 import view.interfaces.*;
 
-public class ControlPanel extends JPanel implements Notifier{
+public class ControlPanel extends JPanel implements Notifier,ControlInterface{
 
 	private static final long serialVersionUID = -8040537962044433652L;
 	private PinArea pinArea;
@@ -65,24 +65,6 @@ public class ControlPanel extends JPanel implements Notifier{
 		placeButton.setEnabled(val);
 		hideButton.setEnabled(val);		
 		pinArea.active(val);		
-	}
-	
-	public Point doTurn() {
-		
-		placePoint = new Point();		
-		latch = new CountDownLatch(1);
-		active(true);
-		
-		try {
-			// Waiting for user input.
-			latch.await();			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		active(false);		
-		render.showPins(true);
-		return placePoint;
 	}
 	
 	public void notifyTurn(String s) {
@@ -140,5 +122,23 @@ public class ControlPanel extends JPanel implements Notifier{
 	public void forceMove() {
 		placePoint = new Point(0,0);
 		latch.countDown();		
+	}
+
+	// Wait for the user to select a single pin in the pinArea.
+	public Point getSelected() {
+		placePoint = new Point();		
+		latch = new CountDownLatch(1);
+		active(true);
+		
+		try {
+			// Waiting for user input.
+			latch.await();			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		active(false);		
+		render.showPins(true);
+		return placePoint;		
 	}	
 }

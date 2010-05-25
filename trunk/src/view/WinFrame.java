@@ -10,24 +10,27 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
-public class WinPanel extends JPanel{
+public class WinFrame extends JFrame{
 	
 	private static final long serialVersionUID = 5235829744803819437L;
 	private String winner;
 	private MainFrame mf;
-	private JFrame frame;
 	
 	private AbstractAction startNewGameAction;
 	private AbstractAction quitGameAction;
 	
-	public WinPanel(String winner, MainFrame mf, JFrame frame) {
+	public WinFrame(String winner, MainFrame mf) {
 		super();
 		this.winner = winner;
 		this.mf = mf;
-		this.frame = frame;
+		setPreferredSize(new Dimension(300,200));
+		setResizable(false);
+		setLocation(670, 360);
+		setTitle("Game Over!");
 		initGUI();
+		pack();
+		setVisible(true);
 	}
 	
 	public void initGUI(){
@@ -66,7 +69,7 @@ public class WinPanel extends JPanel{
 
 				public void actionPerformed(ActionEvent evt){
 					mf.newGame();
-					frame.dispose();
+					dispose();
 				}	
 			};
 		}

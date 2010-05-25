@@ -16,10 +16,10 @@ public class TidyAI extends User {
 	PriorityQueue<Element<ArrayList<Point>>> pqueue;
 	HashMap<Point,Integer> points;
 
-	private int modifier;							// This is used to calculate the "where to put the next ball" score 
-	private int lowerBound;							// Every score that's lower than this variable will not be included in the PriorityQueue 
-	private int offensiveBonus;                 	// A small bonus for offensive moves    
-	private int[] mods;								// Contains the score for 2-,3- & 4-inARow.
+	private int modifier;		// This is used to calculate the "where to put the next ball" score 
+	private int lowerBound;		// Every score that's lower than this variable will not be included in the PriorityQueue 
+	private int offensiveBonus; // A small bonus for offensive moves    
+	private int[] mods;			// Contains the score for 2-,3- & 4-inARow.
 
 	public TidyAI(Player p) {
 		super(p);
@@ -397,7 +397,7 @@ public class TidyAI extends User {
 	}
 
 	public String getNotice() {
-		return "Please wait. The AI is working.";
+		return "";
 	}
 
 	public void disconnect() {}

@@ -1,7 +1,6 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
@@ -14,7 +13,9 @@ import javax.swing.WindowConstants;
 
 import view.interfaces.*;
 import control.interfaces.*;
+import control.interfaces.GameLogic.GameMode;
 import model.Board;
+import model.Player;
 
 public class MainFrame extends JFrame implements UserInterface {
 
@@ -110,34 +111,17 @@ public class MainFrame extends JFrame implements UserInterface {
 	public void newGame() {
 		NewGameFrame.getInstance(this).activate();
 	}
-		
-	public void startNewGame(ArrayList<User> players, int xSize, int ySize, int zSize){
-		gameLogic.configure(xSize, ySize, zSize, players);
+	
+	public void startNewGame(int dim, GameMode gm, ArrayList<Player> players){
+		gameLogic.configure(dim, gm, controlPanel, players);
 	}
 
 	public void drawnGame() {
-		JFrame frame = new JFrame();
-		WinPanel winpanel = new WinPanel("drawn", MainFrame.this, frame);
-		frame.setPreferredSize(new Dimension(300,200));
-		frame.setMaximumSize(new Dimension(300,200));
-		frame.setResizable(false);
-		frame.setLocation(670, 360);
-		frame.setTitle("Drawn Game");
-		frame.add(winpanel);
-		frame.pack();
-		frame.setVisible(true);	
+		new WinFrame("drawn",this);	
 	}
 
 	public void wonGame(User u) {
-		JFrame frame = new JFrame();
-		WinPanel winpanel = new WinPanel(u.getPlayer().getName(), MainFrame.this, frame);
-		frame.setPreferredSize(new Dimension(300,200));
-		frame.setResizable(false);
-		frame.setLocation(670, 360);
-		frame.setTitle(u.getPlayer().getName() + " Wins!");
-		frame.add(winpanel);
-		frame.pack();
-		frame.setVisible(true);		
+		new WinFrame(u.getPlayer().getName(), this);		
 	}
 
 	@Override

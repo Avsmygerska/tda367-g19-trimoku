@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 import view.*;
 import model.*;
 import control.interfaces.*;
+import control.interfaces.GameLogic.GameMode;
 import control.*;
 
 
@@ -29,13 +30,14 @@ public class Trimoku {
 		try { cl.await();
 		} catch (InterruptedException e) { e.printStackTrace();	}		
 		
-		final TrimokuLogic gameLogic = new TrimokuLogic(inst);
+		final TrimokuLogic gameLogic = new TrimokuLogic();
+		gameLogic.setUserInterface(inst);
 		
 		// Default game.
-		ArrayList<User> players = new ArrayList<User>();		
-		players.add(new LocalUser(new Player("Player 1",Color.GREEN),inst.getControlPanel()));
-		players.add(new LocalUser(new Player("Player 2",Color.RED),inst.getControlPanel()));		
-		gameLogic.configure(5, 5, 5, players);
+		ArrayList<Player> players = new ArrayList<Player>();		
+		players.add(new Player("Player 1",Color.GREEN));
+		players.add(new Player("Player 2",Color.RED));		
+		gameLogic.configure(5,GameMode.HOT_SEAT,inst.getControlPanel(), players);
 		
 		gameLogic.run();
 	}
