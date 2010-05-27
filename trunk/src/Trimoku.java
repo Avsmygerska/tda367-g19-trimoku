@@ -5,7 +5,6 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
 import view.*;
 import model.*;
-import control.interfaces.*;
 import control.interfaces.GameLogic.GameMode;
 import control.*;
 
