@@ -1,0 +1,1 @@
+A simple game, where you play traditional five-in-a-row (gomoku) in three dimensions. Features 3D graphics and hot seat gameplay. Future developments may include AI adversaries.
